@@ -75,11 +75,14 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 ## Android MediaCodec / GStreamer Focus
 
+- Immediate DQH goal is Vulkan plus hardware-decoded 720p video in the same run. Do not treat WineD3D, software decode, or sub-720p movie encodes as the destination.
 - Current fork patch `0b41a266` wires the optional Bionic `gstreamer_androidmedia.tzst` path and app-side GStreamer Android callback helpers.
 - `tools\build_gstreamer_androidmedia_patch.ps1` now builds a real arm64 Bionic `usr/lib/gstreamer-1.0/libgstandroidmedia.so` and packages it into `gstreamer_androidmedia.tzst`.
 - Hardware decode is still not proven until a same-signed APK installs on Thor, the plugin loads, and logcat shows actual `androidmedia` / `amcviddec-*` / `MediaCodec` usage during DQH movie playback.
 - `WINE_GST_NO_GL=0` should be enabled automatically only when `libgstandroidmedia.so` exists. If the plugin is absent, keep the existing `WINE_GST_NO_GL=1` behavior.
 - DQH movie lag diagnosis should look for actual decoder lines, not just MP4 acceptance. MP4 through Wine/GStreamer can still be software decode.
+- Latest `.hgo` hardware-video probe proves the plugin archive is installed but not usable yet: `libgstandroidmedia.so` fails to initialize because the Wine/GStreamer child process cannot resolve `JNI_CreateJavaVM`, `JNI_GetCreatedJavaVMs`, or `libdvm.so`. The next fix target is JNI/application-class-loader access for androidmedia, or an app-side MediaCodec bridge. More env vars alone will not create hardware decode.
+- Repeat DQH hardware-video proof with `games\dragon-quest-heroes-slime-edition\tools\start_gamenative_dqh_dxvk_canary.ps1 -HardwareVideoProbe -CaptureSeconds 45` from the tools repo. A pass needs visible DXVK, helper logs, movie open, and real Android decoder evidence in `hardware_decode_probe.txt`.
 
 ## Controller / Handheld UX
 
