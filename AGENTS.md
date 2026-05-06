@@ -1,0 +1,64 @@
+# GameNative Agent Notes
+
+These notes are for work in this GameNative fork. Keep changes practical, testable, and aimed at making legally owned offline PC games better on handheld Android devices such as AYN Thor.
+
+## Source Control
+
+- Writable remote is the user's fork: `origin = git@github.com:noeldvictor/GameNative.git`.
+- Original project is comparison/pull-only: `upstream = https://github.com/utkarshdalal/GameNative.git`.
+- Do not push to upstream. This checkout should have upstream push disabled.
+- Commit GameNative source changes in this repo, not in the tools repo.
+- Do not commit APK builds, runtime imagefs archives, extracted runtimes, Gradle caches, Android SDKs, or game files.
+
+## Safety Scope
+
+- Work only on compatibility, controller UX, media playback, offline single-player helper support, diagnostics, and runtime packaging.
+- Do not patch DRM, Steam ownership checks, anti-cheat, networking, multiplayer, leaderboards, or online-service protections.
+- Do not add code or docs for redistributing modified commercial game files.
+- If a change touches Steam integration, keep it to normal launcher compatibility and logging. Do not alter ownership or entitlement decisions.
+
+## Local Workflow
+
+- On this Windows workstation, use PowerShell commands. Prefer `Get-ChildItem`, `Get-Content`, and `Select-String`; do not use `rg`.
+- Before editing, check `git status --short --branch`.
+- Keep changes small and reversible. If a patch is speculative, gate it behind explicit runtime detection and log clearly.
+- Prefer app logs and `logcat` proof over guessing. Record exact env vars and loaded library/plugin names when debugging GameNative launches.
+- For AYN Thor UI work, scrcpy mirror mode is the practical companion path; blind ADB form entry is unreliable.
+
+## Build Notes
+
+- Repo-local JDK used by the tools workspace: `C:\Users\leanerdesigner\Documents\SteamPortableTools\toolchains\jdk-21.0.11+10`.
+- Gradle also needs Android SDK configuration through `local.properties`. If `local.properties` is missing, do not claim the APK was built.
+- A source compile check can be attempted with:
+
+```powershell
+$env:JAVA_HOME='C:\Users\leanerdesigner\Documents\SteamPortableTools\toolchains\jdk-21.0.11+10'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat :app:compileDebugJavaWithJavac
+```
+
+## Runtime Imagefs Rules
+
+- GameNative media/runtime behavior is not only Android app code. The app downloads or extracts imagefs archives such as `imagefs_gamenative.txz`, `imagefs_bionic.txz`, and runtime patch archives.
+- Do not assume an env var can enable a plugin that is not present in imagefs. Prove the plugin exists in `usr/lib/gstreamer-1.0` and appears in logs.
+- Keep Bionic and glibc paths separate. A Bionic Android plugin is not a safe drop-in for the glibc imagefs.
+- For optional runtime experiments, prefer a separate archive such as `gstreamer_androidmedia.tzst` and extract it only when present. Missing optional archives must be non-fatal.
+- If adding executable libraries to imagefs, set permissions and log the installed path.
+
+## Android MediaCodec / GStreamer Focus
+
+- Current fork patch `0b41a266` wires the optional Bionic `gstreamer_androidmedia.tzst` path and app-side GStreamer Android callback helpers.
+- That commit is wiring only. Hardware decode is not done until a real `usr/lib/gstreamer-1.0/libgstandroidmedia.so` is built for the GameNative Bionic runtime, packaged, installed, and observed in logcat as actual `androidmedia` / `amcviddec-*` / `MediaCodec` usage.
+- `WINE_GST_NO_GL=0` should be enabled automatically only when `libgstandroidmedia.so` exists. If the plugin is absent, keep the existing `WINE_GST_NO_GL=1` behavior.
+- DQH movie lag diagnosis should look for actual decoder lines, not just MP4 acceptance. MP4 through Wine/GStreamer can still be software decode.
+
+## Controller / Handheld UX
+
+- Controller usability is a release gate for handheld work.
+- For game helper overlays launched through GameNative, controller menus must open, navigate, confirm, back out, and close without keyboard/mouse.
+- Avoid adding extra handheld hotkey chords unless the user asks. The preferred cheat-menu toggle for game-local helpers is `L3+R3`.
+
+## Reports
+
+- Durable cross-project notes live in the tools repo, especially `docs/gamenative-mediacodec-wiring.md`.
+- When making a GameNative change for a specific game, record the tested game, device, GameNative version/commit, env vars, and log evidence in the tools repo report too.
