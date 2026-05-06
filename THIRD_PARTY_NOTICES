@@ -172,6 +172,19 @@ SOFTWARE.
 
 ---
 
+## GStreamer Android Media Helpers
+
+**Library:** GStreamer `androidmedia` Java helper classes
+**Source:** https://gitlab.freedesktop.org/gstreamer/gstreamer/-/tree/main/subprojects/gst-plugins-bad/sys/androidmedia
+**License:** LGPL-2.1 / GNU Library GPL v2 or later, per copied source headers
+
+The Java callback helper classes under
+`app/src/main/java/org/freedesktop/gstreamer/androidmedia/` are copied from
+GStreamer's `gst-plugins-bad/sys/androidmedia` source so an optional
+`libgstandroidmedia.so` runtime patch can call into the Android app process.
+
+---
+
 ## OpenAL Soft
 
 **Library:** OpenAL Soft v1.25.1

@@ -45,6 +45,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class ImageFsInstaller {
     public static final byte LATEST_VERSION = 28;
+    private static final String GST_ANDROIDMEDIA_PATCH = "gstreamer_androidmedia.tzst";
+    private static final String GST_ANDROIDMEDIA_PLUGIN = "usr/lib/gstreamer-1.0/libgstandroidmedia.so";
 
     private static void resetContainerImgVersions(Context context) {
         ContainerManager manager = new ContainerManager(context);
@@ -154,6 +156,9 @@ public abstract class ImageFsInstaller {
 
                 installWineFromDownloads(context);
                 installGuestLibs(context);
+                if (containerVariant.equals(Container.BIONIC)) {
+                    installOptionalImageFsPatch(context, assetManager, imageFs, rootDir, GST_ANDROIDMEDIA_PATCH, "GStreamer androidmedia");
+                }
                 imageFs.createImgVersionFile(LATEST_VERSION);
                 resetContainerImgVersions(context);
 
@@ -206,6 +211,42 @@ public abstract class ImageFsInstaller {
         chmod(new File(imagefs, "opt/mono-gecko-offline/wine-mono-11.0.0-x86.msi"));
     }
 
+    private static void installOptionalImageFsPatch(Context context, AssetManager assetManager, ImageFs imageFs, File rootDir, String fileName, String label) {
+        File plugin = new File(rootDir, GST_ANDROIDMEDIA_PLUGIN);
+        if (plugin.exists()) {
+            chmod(plugin);
+            Log.i("ImageFsInstaller", label + " already installed at " + plugin.getPath());
+            return;
+        }
+
+        boolean installed = false;
+        try {
+            if (Arrays.asList(assetManager.list("")).contains(fileName)) {
+                Log.i("ImageFsInstaller", "Installing optional " + label + " patch from assets: " + fileName);
+                installed = TarCompressorUtils.extract(TarCompressorUtils.Type.ZSTD, assetManager, fileName, rootDir);
+            } else {
+                File downloaded = new File(imageFs.getFilesDir(), fileName);
+                if (downloaded.exists()) {
+                    Log.i("ImageFsInstaller", "Installing optional " + label + " patch from downloads: " + downloaded.getPath());
+                    installed = TarCompressorUtils.extract(TarCompressorUtils.Type.ZSTD, downloaded, rootDir);
+                } else {
+                    Log.i("ImageFsInstaller", "Optional " + label + " patch not found; continuing without " + fileName);
+                    return;
+                }
+            }
+        } catch (IOException e) {
+            Log.w("ImageFsInstaller", "Could not inspect optional " + label + " patch assets", e);
+            return;
+        }
+
+        if (installed) {
+            chmod(plugin);
+            Log.i("ImageFsInstaller", "Installed optional " + label + " patch");
+        } else {
+            Log.w("ImageFsInstaller", "Failed to install optional " + label + " patch");
+        }
+    }
+
     private static void chmod(File f) { if (f.exists()) FileUtils.chmod(f, 0755);}
 
     public static Future<Boolean> installIfNeededFuture(final Context context, AssetManager assetManager, Container container, Callback<Integer> onProgress) {
@@ -227,6 +268,9 @@ public abstract class ImageFsInstaller {
         } else {
             Log.d("ImageFsInstaller", "Image FS already valid and at latest version");
             return Executors.newSingleThreadExecutor().submit(() -> {
+                if (container.getContainerVariant().equals(Container.BIONIC)) {
+                    installOptionalImageFsPatch(context, assetManager, imageFs, imageFs.getRootDir(), GST_ANDROIDMEDIA_PATCH, "GStreamer androidmedia");
+                }
                 return true;
             });
         }

@@ -56,6 +56,7 @@ import app.gamenative.events.AndroidEvent;
 import app.gamenative.service.SteamService;
 
 public class BionicProgramLauncherComponent extends GuestProgramLauncherComponent {
+    private static final String GST_ANDROIDMEDIA_PLUGIN = "usr/lib/gstreamer-1.0/libgstandroidmedia.so";
     private String guestExecutable;
     private static int pid = -1;
     private String[] bindingPaths;
@@ -259,7 +260,8 @@ public class BionicProgramLauncherComponent extends GuestProgramLauncherComponen
 
         envVars.put("XDG_DATA_DIRS", rootDir.getPath() + "/usr/share");
         envVars.put("XDG_CONFIG_DIRS", rootDir.getPath() + "/usr/etc/xdg");
-        envVars.put("GST_PLUGIN_PATH", rootDir.getPath() + "/usr/lib/gstreamer-1.0");
+        String gstPluginPath = rootDir.getPath() + "/usr/lib/gstreamer-1.0";
+        envVars.put("GST_PLUGIN_PATH", gstPluginPath);
         envVars.put("VK_LAYER_PATH", rootDir.getPath() + "/usr/share/vulkan/implicit_layer.d" + ":" + rootDir.getPath() + "/usr/share/vulkan/explicit_layer.d");
         envVars.put("WINE_NO_DUPLICATE_EXPLORER", "1");
         envVars.put("PREFIX", rootDir.getPath() + "/usr");
@@ -272,7 +274,15 @@ public class BionicProgramLauncherComponent extends GuestProgramLauncherComponen
         envVars.put("SSL_CERT_FILE", rootDir.getPath() + "/usr/etc/tls/cert.pem");
         envVars.put("SSL_CERT_DIR", rootDir.getPath() + "/usr/etc/tls/certs");
         envVars.put("WINE_X11FORCEGLX", "1");
-        envVars.put("WINE_GST_NO_GL", "1");
+        File androidMediaPlugin = new File(rootDir, GST_ANDROIDMEDIA_PLUGIN);
+        if (androidMediaPlugin.exists()) {
+            envVars.put("GST_PLUGIN_SYSTEM_PATH_1_0", gstPluginPath);
+            envVars.put("WINE_GST_NO_GL", "0");
+            Log.i("BionicProgramLauncherComponent", "GStreamer androidmedia plugin found; enabling GL-capable Wine GStreamer path");
+        } else {
+            envVars.put("WINE_GST_NO_GL", "1");
+            Log.d("BionicProgramLauncherComponent", "GStreamer androidmedia plugin not found; keeping WINE_GST_NO_GL=1");
+        }
         envVars.put("SteamGameId", "0");
 
         String primaryDNS = "8.8.4.4";
