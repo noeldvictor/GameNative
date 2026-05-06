@@ -407,10 +407,11 @@ public class BionicProgramLauncherComponent extends GuestProgramLauncherComponen
     }
 
     private File getEvshimMemDir(Context context, ImageFs imageFs) {
+        File memDir = new File(imageFs.getRootDir(), "tmp");
         if (context.getPackageName().endsWith(".hgo")) {
-            return new File("/sdcard/GameNativeHGO");
+            Log.i("BionicProgramLauncherComponent", "HGO debug package: using private EVSHIM mem dir " + memDir.getPath());
         }
-        return new File(imageFs.getRootDir(), "tmp");
+        return memDir;
     }
 
     private void extractBox64Files() {

@@ -95,6 +95,7 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 - Controller usability is a release gate for handheld work.
 - For game helper overlays launched through GameNative, controller menus must open, navigate, confirm, back out, and close without keyboard/mouse.
 - Avoid adding extra handheld hotkey chords unless the user asks. The preferred cheat-menu toggle for game-local helpers is `L3+R3`.
+- For the `.hgo` debug package, keep `EVSHIM_MEM_DIR` inside the private imagefs `tmp` folder. Do not use `/sdcard/GameNativeHGO` for controller bridge files; stale UID/permission ownership can leave Wine reading dead `gamepad*.mem` state even when the game launches.
 
 ## Reports
 

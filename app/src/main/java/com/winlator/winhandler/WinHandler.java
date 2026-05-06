@@ -602,10 +602,11 @@ public class WinHandler {
     }
 
     private File getEvshimMemDir() {
+        File memDir = new File(ImageFs.find(activity).getRootDir(), "tmp");
         if (activity.getPackageName().endsWith(".hgo")) {
-            return new File("/sdcard/GameNativeHGO");
+            Log.i(TAG, "HGO debug package: writing EVSHIM gamepad state to " + memDir.getPath());
         }
-        return new File(ImageFs.find(activity).getRootDir(), "tmp");
+        return memDir;
     }
 
     private void startRumblePoller() {
