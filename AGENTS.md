@@ -28,7 +28,9 @@ These notes are for work in this GameNative fork. Keep changes practical, testab
 ## Build Notes
 
 - Repo-local JDK used by the tools workspace: `C:\Users\leanerdesigner\Documents\SteamPortableTools\toolchains\jdk-21.0.11+10`.
-- Gradle also needs Android SDK configuration through `local.properties`. If `local.properties` is missing, do not claim the APK was built.
+- Repo-local Android SDK used by the tools workspace: `C:\Users\leanerdesigner\Documents\SteamPortableTools\toolchains\android-sdk`.
+- Gradle also needs Android SDK configuration through `local.properties`. Use forward slashes in `sdk.dir` and `ndk.dir`; backslashes become bad Java escapes in generated `BuildConfig`.
+- If `local.properties` is missing, do not claim the APK was built.
 - A source compile check can be attempted with:
 
 ```powershell
@@ -36,6 +38,15 @@ $env:JAVA_HOME='C:\Users\leanerdesigner\Documents\SteamPortableTools\toolchains\
 $env:Path="$env:JAVA_HOME\bin;$env:Path"
 .\gradlew.bat :app:compileDebugJavaWithJavac
 ```
+- Build the optional Android MediaCodec plugin archive with:
+
+```powershell
+.\tools\build_gstreamer_androidmedia_patch.ps1 -CopyToAssets
+```
+
+- The build script expects the sparse GStreamer source at exact tag `1.26.1`, matching the bundled runtime libraries `libgstreamer-1.0.so.0.2601.0`. Do not build from GStreamer `main` for this experiment.
+- `app\src\main\assets\gstreamer_androidmedia.tzst` is generated and ignored. Rebuild it locally before assembling a test APK.
+- A custom APK cannot update the user's installed Thor GameNative unless it is signed with the same release/debug lineage. Do not uninstall the existing app just to force an install unless the user explicitly accepts losing GameNative app data/profiles.
 
 ## Runtime Imagefs Rules
 
@@ -48,7 +59,8 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 ## Android MediaCodec / GStreamer Focus
 
 - Current fork patch `0b41a266` wires the optional Bionic `gstreamer_androidmedia.tzst` path and app-side GStreamer Android callback helpers.
-- That commit is wiring only. Hardware decode is not done until a real `usr/lib/gstreamer-1.0/libgstandroidmedia.so` is built for the GameNative Bionic runtime, packaged, installed, and observed in logcat as actual `androidmedia` / `amcviddec-*` / `MediaCodec` usage.
+- `tools\build_gstreamer_androidmedia_patch.ps1` now builds a real arm64 Bionic `usr/lib/gstreamer-1.0/libgstandroidmedia.so` and packages it into `gstreamer_androidmedia.tzst`.
+- Hardware decode is still not proven until a same-signed APK installs on Thor, the plugin loads, and logcat shows actual `androidmedia` / `amcviddec-*` / `MediaCodec` usage during DQH movie playback.
 - `WINE_GST_NO_GL=0` should be enabled automatically only when `libgstandroidmedia.so` exists. If the plugin is absent, keep the existing `WINE_GST_NO_GL=1` behavior.
 - DQH movie lag diagnosis should look for actual decoder lines, not just MP4 acceptance. MP4 through Wine/GStreamer can still be software decode.
 
