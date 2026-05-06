@@ -47,6 +47,8 @@ public abstract class ImageFsInstaller {
     public static final byte LATEST_VERSION = 28;
     private static final String GST_ANDROIDMEDIA_PATCH = "gstreamer_androidmedia.tzst";
     private static final String GST_ANDROIDMEDIA_PLUGIN = "usr/lib/gstreamer-1.0/libgstandroidmedia.so";
+    private static final String HGO_MEDIACODEC_PATCH = "hgo_mediacodec.tzst";
+    private static final String HGO_MEDIACODEC_PLUGIN = "usr/lib/gstreamer-1.0/libgsthgomediacodec.so";
 
     private static void resetContainerImgVersions(Context context) {
         ContainerManager manager = new ContainerManager(context);
@@ -157,7 +159,12 @@ public abstract class ImageFsInstaller {
                 installWineFromDownloads(context);
                 installGuestLibs(context);
                 if (containerVariant.equals(Container.BIONIC)) {
-                    installOptionalImageFsPatch(context, assetManager, imageFs, rootDir, GST_ANDROIDMEDIA_PATCH, "GStreamer androidmedia");
+                    boolean hgoMediaCodecAvailable = installOptionalImageFsPatch(context, assetManager, imageFs, rootDir, HGO_MEDIACODEC_PATCH, HGO_MEDIACODEC_PLUGIN, "HGO MediaCodec");
+                    if (hgoMediaCodecAvailable) {
+                        disableOptionalImageFsPlugin(rootDir, GST_ANDROIDMEDIA_PLUGIN, "GStreamer androidmedia");
+                    } else {
+                        installOptionalImageFsPatch(context, assetManager, imageFs, rootDir, GST_ANDROIDMEDIA_PATCH, GST_ANDROIDMEDIA_PLUGIN, "GStreamer androidmedia");
+                    }
                 }
                 imageFs.createImgVersionFile(LATEST_VERSION);
                 resetContainerImgVersions(context);
@@ -211,12 +218,12 @@ public abstract class ImageFsInstaller {
         chmod(new File(imagefs, "opt/mono-gecko-offline/wine-mono-11.0.0-x86.msi"));
     }
 
-    private static void installOptionalImageFsPatch(Context context, AssetManager assetManager, ImageFs imageFs, File rootDir, String fileName, String label) {
-        File plugin = new File(rootDir, GST_ANDROIDMEDIA_PLUGIN);
+    private static boolean installOptionalImageFsPatch(Context context, AssetManager assetManager, ImageFs imageFs, File rootDir, String fileName, String pluginRelativePath, String label) {
+        File plugin = new File(rootDir, pluginRelativePath);
         if (plugin.exists()) {
             chmod(plugin);
             Log.i("ImageFsInstaller", label + " already installed at " + plugin.getPath());
-            return;
+            return true;
         }
 
         boolean installed = false;
@@ -231,12 +238,12 @@ public abstract class ImageFsInstaller {
                     installed = TarCompressorUtils.extract(TarCompressorUtils.Type.ZSTD, downloaded, rootDir);
                 } else {
                     Log.i("ImageFsInstaller", "Optional " + label + " patch not found; continuing without " + fileName);
-                    return;
+                    return false;
                 }
             }
         } catch (IOException e) {
             Log.w("ImageFsInstaller", "Could not inspect optional " + label + " patch assets", e);
-            return;
+            return false;
         }
 
         if (installed) {
@@ -244,6 +251,30 @@ public abstract class ImageFsInstaller {
             Log.i("ImageFsInstaller", "Installed optional " + label + " patch");
         } else {
             Log.w("ImageFsInstaller", "Failed to install optional " + label + " patch");
+        }
+        return plugin.exists();
+    }
+
+    private static void disableOptionalImageFsPlugin(File rootDir, String pluginRelativePath, String label) {
+        File plugin = new File(rootDir, pluginRelativePath);
+        if (!plugin.exists()) {
+            return;
+        }
+
+        File disabledPlugin = new File(rootDir, pluginRelativePath + ".hgo-disabled");
+        if (disabledPlugin.exists()) {
+            if (plugin.delete()) {
+                Log.i("ImageFsInstaller", "Removed active duplicate " + label + " because disabled copy already exists");
+            } else {
+                Log.w("ImageFsInstaller", "Could not remove active duplicate " + label + " at " + plugin.getPath());
+            }
+            return;
+        }
+
+        if (plugin.renameTo(disabledPlugin)) {
+            Log.i("ImageFsInstaller", "Disabled " + label + " while HGO MediaCodec plugin is installed");
+        } else {
+            Log.w("ImageFsInstaller", "Could not disable " + label + " at " + plugin.getPath());
         }
     }
 
@@ -269,7 +300,13 @@ public abstract class ImageFsInstaller {
             Log.d("ImageFsInstaller", "Image FS already valid and at latest version");
             return Executors.newSingleThreadExecutor().submit(() -> {
                 if (container.getContainerVariant().equals(Container.BIONIC)) {
-                    installOptionalImageFsPatch(context, assetManager, imageFs, imageFs.getRootDir(), GST_ANDROIDMEDIA_PATCH, "GStreamer androidmedia");
+                    File rootDir = imageFs.getRootDir();
+                    boolean hgoMediaCodecAvailable = installOptionalImageFsPatch(context, assetManager, imageFs, rootDir, HGO_MEDIACODEC_PATCH, HGO_MEDIACODEC_PLUGIN, "HGO MediaCodec");
+                    if (hgoMediaCodecAvailable) {
+                        disableOptionalImageFsPlugin(rootDir, GST_ANDROIDMEDIA_PLUGIN, "GStreamer androidmedia");
+                    } else {
+                        installOptionalImageFsPatch(context, assetManager, imageFs, rootDir, GST_ANDROIDMEDIA_PATCH, GST_ANDROIDMEDIA_PLUGIN, "GStreamer androidmedia");
+                    }
                 }
                 return true;
             });
