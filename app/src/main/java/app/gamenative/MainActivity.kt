@@ -60,6 +60,7 @@ import timber.log.Timber
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private var lastHgoMotionPassthroughLogMs = 0L
+    private var lastHgoInputProbeLogMs = 0L
 
     companion object {
         private var totalIndex = 0
@@ -466,6 +467,7 @@ class MainActivity : ComponentActivity() {
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         // Log.d("MainActivity$index", "dispatchKeyEvent(${event.keyCode}):\n$event")
 
+        logHgoInputProbe(event)
         if (routeHgoGamepadKeyToWine(event)) {
             return true
         }
@@ -492,6 +494,7 @@ class MainActivity : ComponentActivity() {
     override fun dispatchGenericMotionEvent(ev: MotionEvent?): Boolean {
         // Log.d("MainActivity$index", "dispatchGenericMotionEvent(${ev?.deviceId}:${ev?.device?.name}):\n$ev")
 
+        logHgoInputProbe(ev)
         if (routeHgoGamepadMotionToWine(ev)) {
             return true
         }
@@ -513,6 +516,57 @@ class MainActivity : ComponentActivity() {
             Log.d("gncontrol", "HGO activity raw key passthrough keyCode=${event.keyCode} device=${device.name}")
         }
         return handled
+    }
+
+    private fun logHgoInputProbe(event: KeyEvent) {
+        if (!packageName.endsWith(".hgo")) return
+        val device = event.device ?: return
+        val isController = ExternalController.isGameController(device)
+        val isLikelyPadKey = when (event.keyCode) {
+            KeyEvent.KEYCODE_DPAD_UP,
+            KeyEvent.KEYCODE_DPAD_DOWN,
+            KeyEvent.KEYCODE_DPAD_LEFT,
+            KeyEvent.KEYCODE_DPAD_RIGHT,
+            KeyEvent.KEYCODE_DPAD_CENTER,
+            KeyEvent.KEYCODE_BUTTON_A,
+            KeyEvent.KEYCODE_BUTTON_B,
+            KeyEvent.KEYCODE_BUTTON_X,
+            KeyEvent.KEYCODE_BUTTON_Y,
+            KeyEvent.KEYCODE_BUTTON_L1,
+            KeyEvent.KEYCODE_BUTTON_R1,
+            KeyEvent.KEYCODE_BUTTON_L2,
+            KeyEvent.KEYCODE_BUTTON_R2,
+            KeyEvent.KEYCODE_BUTTON_THUMBL,
+            KeyEvent.KEYCODE_BUTTON_THUMBR,
+            KeyEvent.KEYCODE_BUTTON_START,
+            KeyEvent.KEYCODE_BUTTON_SELECT -> true
+            else -> false
+        }
+        if (!isController && !isLikelyPadKey) return
+        if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
+            Log.d(
+                "gncontrol",
+                "HGO input probe key keyCode=${event.keyCode} source=0x${event.source.toString(16)} " +
+                    "device=${device.name} gameController=$isController wineReady=${PluviaApp.xServerView != null}",
+            )
+        }
+    }
+
+    private fun logHgoInputProbe(event: MotionEvent?) {
+        if (!packageName.endsWith(".hgo") || event == null) return
+        val device = event.device ?: return
+        val isController = ExternalController.isGameController(device)
+        val isJoystick = (event.source and android.view.InputDevice.SOURCE_JOYSTICK) == android.view.InputDevice.SOURCE_JOYSTICK
+        if (!isController && !isJoystick) return
+        if (event.eventTime - lastHgoInputProbeLogMs > 1000L) {
+            lastHgoInputProbeLogMs = event.eventTime
+            Log.d(
+                "gncontrol",
+                "HGO input probe motion source=0x${event.source.toString(16)} device=${device.name} " +
+                    "gameController=$isController wineReady=${PluviaApp.xServerView != null} " +
+                    "lx=${event.getAxisValue(MotionEvent.AXIS_X)} ly=${event.getAxisValue(MotionEvent.AXIS_Y)}",
+            )
+        }
     }
 
     private fun routeHgoGamepadMotionToWine(event: MotionEvent?): Boolean {
