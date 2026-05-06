@@ -67,6 +67,7 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 - External JSON launch parsing must include `graphicsDriverConfig`; otherwise Vulkan canaries fall back to blank wrapper settings and produce misleading env like `MESA_VK_WSI_PRESENT_MODE=`.
 - Do not export blank Vulkan wrapper env vars. Empty values such as `MESA_VK_WSI_PRESENT_MODE=` are not neutral; Mesa logs them as invalid and they muddy the failure signal.
 - Latest DQH `.hgo` FIFO canary after override/env cleanup still black-screens. It now proves the cleaned env is applied (`MESA_VK_WSI_PRESENT_MODE=fifo`, wrapper Vulkan `1.3.0`), but D3D9 DXVK logs `No adapters found` while the D3D11/DXGI path sees a `Wrapper()` adapter and can start a 1x1 swapchain. Next code work should explain that D3D9/D3D11 adapter split before more random present-mode changes.
+- DQH visible Vulkan canary: DXVK `1.10.3` plus `useDRI3=false` produced a visible title screen with wrapper Vulkan `1.3.0` and FIFO present mode. In this profile GameNative adds `MESA_VK_WSI_DEBUG=sw`; D3D11 then resizes to `1280x720`. DXVK `2.7.1` still rejects the D3D9 path over missing `shaderInt64`, and DXVK `1.10.3` with DRI3 on tends to stick at `1x1`.
 - Keep WineD3D as the compatibility fallback for affected games until DXVK is proven visible in a fresh launch.
 
 ## Android MediaCodec / GStreamer Focus
