@@ -13,6 +13,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -29,6 +30,7 @@ import app.gamenative.ui.component.settings.SettingsCenteredLabel
 import app.gamenative.ui.component.settings.SettingsEnvVars
 import app.gamenative.ui.component.settings.SettingsMultiListDropdown
 import app.gamenative.ui.theme.settingsTileColors
+import app.gamenative.utils.HgoLabPresets
 import com.alorma.compose.settings.ui.SettingsGroup
 import com.alorma.compose.settings.ui.SettingsMenuLink
 import com.winlator.core.envvars.EnvVarInfo
@@ -39,6 +41,17 @@ import com.winlator.core.envvars.EnvVarSelectionType
 fun EnvironmentTabContent(state: ContainerConfigState) {
     val config = state.config.value
     val envVars = EnvVars(config.envVars)
+    var showLabPresetsDialog by rememberSaveable { mutableStateOf(false) }
+
+    SettingsGroup {
+        SettingsMenuLink(
+            colors = settingsTileColors(),
+            title = { Text(text = stringResource(R.string.hgo_lab_presets)) },
+            subtitle = { Text(text = stringResource(R.string.hgo_lab_presets_description)) },
+            onClick = { showLabPresetsDialog = true },
+        )
+    }
+
     SettingsGroup() {
         if (config.envVars.isNotEmpty()) {
             SettingsEnvVars(
@@ -79,6 +92,41 @@ fun EnvironmentTabContent(state: ContainerConfigState) {
                 }
             },
             onClick = { state.showEnvVarCreateDialog.value = true },
+        )
+    }
+
+    if (showLabPresetsDialog) {
+        AlertDialog(
+            onDismissRequest = { showLabPresetsDialog = false },
+            title = { Text(text = stringResource(R.string.hgo_lab_presets)) },
+            text = {
+                Column {
+                    HgoLabPresets.presets.forEach { preset ->
+                        TextButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                state.config.value = HgoLabPresets.applyPreset(state.config.value, preset.id)
+                                showLabPresetsDialog = false
+                            },
+                        ) {
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                Text(text = preset.label)
+                                Text(
+                                    text = preset.description,
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(
+                    onClick = { showLabPresetsDialog = false },
+                    content = { Text(text = stringResource(R.string.cancel)) },
+                )
+            },
         )
     }
 

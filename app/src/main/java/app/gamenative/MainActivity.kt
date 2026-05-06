@@ -8,6 +8,7 @@ import android.content.res.Configuration
 import android.graphics.Color.TRANSPARENT
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.OrientationEventListener
@@ -48,6 +49,7 @@ import com.posthog.PostHog
 import com.skydoves.landscapist.coil.LocalCoilImageLoader
 import com.winlator.core.AppUtils
 import com.winlator.inputcontrols.ControllerManager
+import com.winlator.inputcontrols.ExternalController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.EnumSet
@@ -57,6 +59,7 @@ import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private var lastHgoMotionPassthroughLogMs = 0L
 
     companion object {
         private var totalIndex = 0
@@ -463,6 +466,10 @@ class MainActivity : ComponentActivity() {
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         // Log.d("MainActivity$index", "dispatchKeyEvent(${event.keyCode}):\n$event")
 
+        if (routeHgoGamepadKeyToWine(event)) {
+            return true
+        }
+
         var eventDispatched = PluviaApp.events.emit(AndroidEvent.KeyEvent(event)) { keyEvent ->
             keyEvent.any { it }
         } == true
@@ -485,11 +492,40 @@ class MainActivity : ComponentActivity() {
     override fun dispatchGenericMotionEvent(ev: MotionEvent?): Boolean {
         // Log.d("MainActivity$index", "dispatchGenericMotionEvent(${ev?.deviceId}:${ev?.device?.name}):\n$ev")
 
+        if (routeHgoGamepadMotionToWine(ev)) {
+            return true
+        }
+
         val eventDispatched = PluviaApp.events.emit(AndroidEvent.MotionEvent(ev)) { event ->
             event.any { it }
         } == true
 
         return if (!eventDispatched) super.dispatchGenericMotionEvent(ev) else true
+    }
+
+    private fun routeHgoGamepadKeyToWine(event: KeyEvent): Boolean {
+        if (!packageName.endsWith(".hgo") || PluviaApp.isOverlayPaused) return false
+        val device = event.device ?: return false
+        if (!ExternalController.isGameController(device)) return false
+        val winHandler = PluviaApp.xServerView?.getxServer()?.winHandler ?: return false
+        val handled = winHandler.onKeyEvent(event)
+        if (handled && event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
+            Log.d("gncontrol", "HGO activity raw key passthrough keyCode=${event.keyCode} device=${device.name}")
+        }
+        return handled
+    }
+
+    private fun routeHgoGamepadMotionToWine(event: MotionEvent?): Boolean {
+        if (!packageName.endsWith(".hgo") || PluviaApp.isOverlayPaused || event == null) return false
+        val device = event.device ?: return false
+        if (!ExternalController.isGameController(device)) return false
+        val winHandler = PluviaApp.xServerView?.getxServer()?.winHandler ?: return false
+        val handled = winHandler.onGenericMotionEvent(event)
+        if (handled && event.eventTime - lastHgoMotionPassthroughLogMs > 1500L) {
+            lastHgoMotionPassthroughLogMs = event.eventTime
+            Log.d("gncontrol", "HGO activity raw motion passthrough device=${device.name}")
+        }
+        return handled
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

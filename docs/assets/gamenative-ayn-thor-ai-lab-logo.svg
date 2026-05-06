@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="GameNative AYN Thor AI Lab logo">
+  <rect width="512" height="512" fill="#10131A"/>
+  <path d="M0 342 512 136v376H0Z" fill="#0E4C5C"/>
+  <rect width="256" height="84" fill="#3DD6D0" opacity=".22"/>
+  <rect x="360" width="152" height="152" fill="#FFB84D" opacity=".24"/>
+  <path d="M76 152h360v208H76Z" fill="#F2FBFF"/>
+  <path d="M108 184h296v122H108Z" fill="#10131A"/>
+  <path d="M128 204h112v82H128Z" fill="#3DD6D0"/>
+  <path d="M272 204h112v82H272Z" fill="#7C5CFF"/>
+  <path d="M214 226h20v42h-20Zm64 0h20v42h-20Zm20 0h-64v16h64Zm0 26h-64v16h64Z" fill="#10131A"/>
+  <path d="M128 326h58v14h-58Zm22-24h14v58h-14Zm216 0h28v28h-28Zm40 32h28v28h-28Z" fill="#10131A"/>
+  <rect x="242" y="314" width="28" height="36" fill="#FFB84D"/>
+  <path d="M180 104h152v28H180Z" fill="#F2FBFF"/>
+  <path d="M194 92h24v24h-24Zm54 0h24v24h-24Zm54 0h24v24h-24Z" fill="#3DD6D0"/>
+  <text x="256" y="430" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700" fill="#F2FBFF">AYN THOR AI LAB</text>
+</svg>

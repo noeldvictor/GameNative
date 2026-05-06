@@ -95,7 +95,11 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 - Controller usability is a release gate for handheld work.
 - For game helper overlays launched through GameNative, controller menus must open, navigate, confirm, back out, and close without keyboard/mouse.
 - Avoid adding extra handheld hotkey chords unless the user asks. The preferred cheat-menu toggle for game-local helpers is `L3+R3`.
+- The lab fork is branded as `GameNative AYN Thor AI Lab` and should stay visibly distinct from public GameNative during experiments. Keep the package id stable unless the user explicitly asks to break update compatibility.
+- Custom-game setup must not depend on tedious manual env entry. Add reusable HGO lab presets for tested Wine/env/controller recipes, expose them in the custom-game config UI, and make the same presets available through ADB launch JSON/extras.
+- Preferred ADB preset key names: `hgoLabPreset` inside `container_config` JSON or `hgo_lab_preset` as a direct intent extra. Presets may be comma-separated for layered recipes.
 - For the `.hgo` debug package, keep `EVSHIM_MEM_DIR` inside the private imagefs `tmp` folder. Do not use `/sdcard/GameNativeHGO` for controller bridge files; stale UID/permission ownership can leave Wine reading dead `gamepad*.mem` state even when the game launches.
+- For the `.hgo` debug package, physical controller input should go raw to `WinHandler` before GameNative profile/remap handling while a game is active. The Android UI can see the Thor controls even when Wine cannot, so prioritize the Android-to-Wine handoff for lab builds. `MainActivity` may route gamepad events directly to the active `XServerView`/`WinHandler` as a hard fallback, with `gncontrol` log evidence.
 
 ## Reports
 

@@ -22,6 +22,9 @@ object IntentLaunchManager {
     private const val EXTRA_GAME_SOURCE = "game_source"
     private const val EXTRA_CONTAINER_CONFIG = "container_config"
     private const val EXTRA_CONTAINER_CONFIG_B64 = "container_config_b64"
+    private const val EXTRA_HGO_LAB_PRESET = "hgo_lab_preset"
+    private const val EXTRA_HGO_LAB_PRESET_CAMEL = "hgoLabPreset"
+    private const val EXTRA_LAB_PRESET = "lab_preset"
     private const val ACTION_LAUNCH_GAME = "app.gamenative.LAUNCH_GAME"
     private const val MAX_CONFIG_JSON_SIZE = 50000 // 50KB limit to prevent memory exhaustion
 
@@ -60,7 +63,7 @@ object IntentLaunchManager {
             ?: intent.getStringExtra(EXTRA_CONTAINER_CONFIG_B64)?.let { encoded ->
                 String(Base64.decode(encoded, Base64.DEFAULT), Charsets.UTF_8)
             }
-        val containerConfig = if (containerConfigJson != null) {
+        var containerConfig = if (containerConfigJson != null) {
             try {
                 parseContainerConfig(containerConfigJson)
             } catch (e: Exception) {
@@ -69,6 +72,13 @@ object IntentLaunchManager {
             }
         } else {
             null
+        }
+        val labPreset = intent.getStringExtra(EXTRA_HGO_LAB_PRESET)
+            ?: intent.getStringExtra(EXTRA_HGO_LAB_PRESET_CAMEL)
+            ?: intent.getStringExtra(EXTRA_LAB_PRESET)
+        if (!labPreset.isNullOrBlank()) {
+            containerConfig = HgoLabPresets.applyPresetList(containerConfig ?: ContainerData(), labPreset)
+            Timber.i("[IntentLaunchManager]: Applied HGO lab preset(s) from launch intent: $labPreset")
         }
 
         return LaunchRequest(appId, containerConfig)
@@ -226,11 +236,18 @@ object IntentLaunchManager {
         val json = JSONObject(jsonString)
 
         val explicitKeys = json.keys().asSequence().toSet()
+        val hgoLabPreset = when {
+            json.has("hgoLabPreset") -> json.getString("hgoLabPreset")
+            json.has("hgo_lab_preset") -> json.getString("hgo_lab_preset")
+            json.has("labPreset") -> json.getString("labPreset")
+            json.has("lab_preset") -> json.getString("lab_preset")
+            else -> ""
+        }
 
         // Defaults here are used for validation and new-container launches. When merging
         // with an existing container, explicitKeys decides whether a default-valued field
         // such as dxvk or useDRI3=true should still override the saved profile.
-        val config = ContainerData(
+        var config = ContainerData(
             name = if (json.has("name")) json.getString("name") else "",
             screenSize = if (json.has("screenSize")) json.getString("screenSize") else Container.DEFAULT_SCREEN_SIZE,
             envVars = if (json.has("envVars")) json.getString("envVars") else Container.DEFAULT_ENV_VARS,
@@ -311,6 +328,11 @@ object IntentLaunchManager {
             useGLSL = if (json.has("useGLSL")) json.getString("useGLSL") else "enabled",
             explicitOverrideKeys = explicitKeys,
         )
+
+        if (hgoLabPreset.isNotBlank()) {
+            config = HgoLabPresets.applyPresetList(config, hgoLabPreset)
+            Timber.i("[IntentLaunchManager]: Applied HGO lab preset(s) from JSON: $hgoLabPreset")
+        }
 
         val validationIssues = validateContainerConfig(config)
         if (validationIssues.isNotEmpty()) {

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GameNative</string>
+    <string name="app_name">GameNative AYN Thor AI Lab</string>
     <string name="login_user">User Login</string>
     <string name="login_2fa">Two Factor</string>
     <string name="home">Home</string>
@@ -811,6 +811,8 @@
 
     <!-- Container Configuration: Management -->
     <string name="environment_variables">Environment Variables</string>
+    <string name="hgo_lab_presets">AYN Thor AI Lab presets</string>
+    <string name="hgo_lab_presets_description">Apply tested handheld env/controller recipes without typing Wine overrides</string>
     <string name="no_environment_variables">No environment variables</string>
     <string name="no_drives">No drives</string>
     <string name="add_drive">Add drive</string>

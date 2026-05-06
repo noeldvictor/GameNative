@@ -304,6 +304,7 @@ fun XServerScreen(
 ) {
     Timber.i("Starting up XServerScreen")
     val context = LocalContext.current
+    val hgoRawControllerPassthrough = remember(context) { context.packageName.endsWith(".hgo") }
     val view = LocalView.current
     val scope = rememberCoroutineScope()
     val imm = remember(context) {
@@ -1325,7 +1326,13 @@ fun XServerScreen(
             } else {
                 var handled = false
                 if (isGamepad) {
-                    handled = physicalControllerHandler?.onKeyEvent(it.event) == true
+                    if (hgoRawControllerPassthrough) {
+                        handled = xServerView?.getxServer()?.winHandler?.onKeyEvent(it.event) == true
+                        if (handled && it.event.action == KeyEvent.ACTION_DOWN && it.event.repeatCount == 0) {
+                            Log.d("gncontrol", "HGO raw key passthrough keyCode=${it.event.keyCode} device=${it.event.device?.name}")
+                        }
+                    }
+                    if (!handled) handled = physicalControllerHandler?.onKeyEvent(it.event) == true
                     if (!handled) handled = PluviaApp.inputControlsView?.onKeyEvent(it.event) == true
                     // Final fallback to WinHandler passthrough
                     if (!handled) handled = xServerView!!.getxServer().winHandler.onKeyEvent(it.event)
@@ -1359,7 +1366,10 @@ fun XServerScreen(
             } else {
                 var handled = false
                 if (isGamepad && it.event != null) {
-                    handled = physicalControllerHandler?.onGenericMotionEvent(it.event!!) == true
+                    if (hgoRawControllerPassthrough) {
+                        handled = xServerView?.getxServer()?.winHandler?.onGenericMotionEvent(it.event!!) == true
+                    }
+                    if (!handled) handled = physicalControllerHandler?.onGenericMotionEvent(it.event!!) == true
                     if (!handled) handled = PluviaApp.inputControlsView?.onGenericMotionEvent(it.event) == true
                     // Final fallback to WinHandler passthrough
                     if (!handled) handled = xServerView!!.getxServer().winHandler.onGenericMotionEvent(it.event)
