@@ -225,13 +225,22 @@ object IntentLaunchManager {
 
         val json = JSONObject(jsonString)
 
-        // Only include non-default values to avoid overriding existing container settings
+        val explicitKeys = json.keys().asSequence().toSet()
+
+        // Defaults here are used for validation and new-container launches. When merging
+        // with an existing container, explicitKeys decides whether a default-valued field
+        // such as dxvk or useDRI3=true should still override the saved profile.
         val config = ContainerData(
             name = if (json.has("name")) json.getString("name") else "",
             screenSize = if (json.has("screenSize")) json.getString("screenSize") else Container.DEFAULT_SCREEN_SIZE,
             envVars = if (json.has("envVars")) json.getString("envVars") else Container.DEFAULT_ENV_VARS,
             graphicsDriver = if (json.has("graphicsDriver")) json.getString("graphicsDriver") else Container.DEFAULT_GRAPHICS_DRIVER,
             graphicsDriverVersion = if (json.has("graphicsDriverVersion")) json.getString("graphicsDriverVersion") else "",
+            graphicsDriverConfig = if (json.has("graphicsDriverConfig")) {
+                json.getString("graphicsDriverConfig")
+            } else {
+                ""
+            },
             dxwrapper = if (json.has("dxwrapper")) json.getString("dxwrapper") else Container.DEFAULT_DXWRAPPER,
             dxwrapperConfig = if (json.has("dxwrapperConfig")) {
                 normalizeDxWrapperConfig(json.getString("dxwrapperConfig"))
@@ -300,6 +309,7 @@ object IntentLaunchManager {
             unpackFiles = if (json.has("unpackFiles")) json.getBoolean("unpackFiles") else false,
             shaderBackend = if (json.has("shaderBackend")) json.getString("shaderBackend") else "glsl",
             useGLSL = if (json.has("useGLSL")) json.getString("useGLSL") else "enabled",
+            explicitOverrideKeys = explicitKeys,
         )
 
         val validationIssues = validateContainerConfig(config)
@@ -325,6 +335,7 @@ object IntentLaunchManager {
             envVars = envVars.ifBlank { defaults.envVars },
             graphicsDriver = graphicsDriver.ifBlank { defaults.graphicsDriver },
             graphicsDriverVersion = graphicsDriverVersion.ifBlank { defaults.graphicsDriverVersion },
+            graphicsDriverConfig = graphicsDriverConfig.ifBlank { Container.DEFAULT_GRAPHICSDRIVERCONFIG },
             dxwrapper = dxwrapper.ifBlank { defaults.dxwrapper },
             dxwrapperConfig = dxwrapperConfig.ifBlank { DXVKHelper.DEFAULT_CONFIG },
             audioDriver = audioDriver.ifBlank { defaults.audioDriver },
@@ -361,6 +372,9 @@ object IntentLaunchManager {
         // Quick return if no actual overrides
         if (override == base) return base
 
+        val hasExplicitKeys = override.explicitOverrideKeys.isNotEmpty()
+        fun explicit(key: String): Boolean = override.explicitOverrideKeys.contains(key)
+
         return ContainerData(
             name = override.name.ifEmpty { base.name },
             screenSize = if (override.screenSize != Container.DEFAULT_SCREEN_SIZE) {
@@ -368,33 +382,37 @@ object IntentLaunchManager {
             } else {
                 base.screenSize
             },
-            envVars = if (override.envVars != Container.DEFAULT_ENV_VARS) override.envVars else base.envVars,
-            graphicsDriver = if (override.graphicsDriver != Container.DEFAULT_GRAPHICS_DRIVER) {
+            envVars = if ((hasExplicitKeys && explicit("envVars")) || override.envVars != Container.DEFAULT_ENV_VARS) override.envVars else base.envVars,
+            graphicsDriver = if ((hasExplicitKeys && explicit("graphicsDriver")) || override.graphicsDriver != Container.DEFAULT_GRAPHICS_DRIVER) {
                 override.graphicsDriver
             } else {
                 base.graphicsDriver
             },
             graphicsDriverVersion = override.graphicsDriverVersion.ifEmpty { base.graphicsDriverVersion },
-            dxwrapper = if (override.dxwrapper != Container.DEFAULT_DXWRAPPER) override.dxwrapper else base.dxwrapper,
+            graphicsDriverConfig = if ((hasExplicitKeys && explicit("graphicsDriverConfig")) || override.graphicsDriverConfig.isNotEmpty()) {
+                override.graphicsDriverConfig
+            } else {
+                base.graphicsDriverConfig
+            },
+            dxwrapper = if ((hasExplicitKeys && explicit("dxwrapper")) || override.dxwrapper != Container.DEFAULT_DXWRAPPER) override.dxwrapper else base.dxwrapper,
             dxwrapperConfig = when {
-                override.dxwrapperConfig.isNotEmpty() -> override.dxwrapperConfig
+                (hasExplicitKeys && explicit("dxwrapperConfig")) || override.dxwrapperConfig.isNotEmpty() -> override.dxwrapperConfig
                 base.dxwrapperConfig.isNotEmpty() -> base.dxwrapperConfig
                 else -> DXVKHelper.DEFAULT_CONFIG
             },
-            audioDriver = if (override.audioDriver != Container.DEFAULT_AUDIO_DRIVER) override.audioDriver else base.audioDriver,
-            wincomponents = if (override.wincomponents != Container.DEFAULT_WINCOMPONENTS) {
+            audioDriver = if ((hasExplicitKeys && explicit("audioDriver")) || override.audioDriver != Container.DEFAULT_AUDIO_DRIVER) override.audioDriver else base.audioDriver,
+            wincomponents = if ((hasExplicitKeys && explicit("wincomponents")) || override.wincomponents != Container.DEFAULT_WINCOMPONENTS) {
                 override.wincomponents
             } else {
                 base.wincomponents
             },
-            drives = if (override.drives != Container.DEFAULT_DRIVES) override.drives else base.drives,
-            execArgs = override.execArgs.ifEmpty { base.execArgs },
-            executablePath = override.executablePath.ifEmpty { base.executablePath },
-            installPath = override.installPath.ifEmpty { base.installPath },
-            // Boolean fields: only override if different from parsing defaults
-            showFPS = if (override.showFPS != false) override.showFPS else base.showFPS,
-            launchRealSteam = if (override.launchRealSteam != false) override.launchRealSteam else base.launchRealSteam,
-            allowSteamUpdates = if (override.allowSteamUpdates != false) {
+            drives = if ((hasExplicitKeys && explicit("drives")) || override.drives != Container.DEFAULT_DRIVES) override.drives else base.drives,
+            execArgs = if (hasExplicitKeys && explicit("execArgs")) override.execArgs else override.execArgs.ifEmpty { base.execArgs },
+            executablePath = if (hasExplicitKeys && explicit("executablePath")) override.executablePath else override.executablePath.ifEmpty { base.executablePath },
+            installPath = if (hasExplicitKeys && explicit("installPath")) override.installPath else override.installPath.ifEmpty { base.installPath },
+            showFPS = if ((hasExplicitKeys && explicit("showFPS")) || override.showFPS != false) override.showFPS else base.showFPS,
+            launchRealSteam = if ((hasExplicitKeys && explicit("launchRealSteam")) || override.launchRealSteam != false) override.launchRealSteam else base.launchRealSteam,
+            allowSteamUpdates = if ((hasExplicitKeys && explicit("allowSteamUpdates")) || override.allowSteamUpdates != false) {
                 override.allowSteamUpdates
             } else {
                 base.allowSteamUpdates
@@ -406,8 +424,8 @@ object IntentLaunchManager {
             } else {
                 base.cpuListWoW64
             },
-            wow64Mode = if (override.wow64Mode != true) override.wow64Mode else base.wow64Mode,
-            startupSelection = if (override.startupSelection != Container.STARTUP_SELECTION_ESSENTIAL.toInt().toByte()) {
+            wow64Mode = if ((hasExplicitKeys && explicit("wow64Mode")) || override.wow64Mode != true) override.wow64Mode else base.wow64Mode,
+            startupSelection = if ((hasExplicitKeys && explicit("startupSelection")) || override.startupSelection != Container.STARTUP_SELECTION_ESSENTIAL.toInt().toByte()) {
                 override.startupSelection
             } else {
                 base.startupSelection
@@ -425,24 +443,24 @@ object IntentLaunchManager {
             fexcoreX87Mode = override.fexcoreX87Mode.ifEmpty { base.fexcoreX87Mode },
             fexcoreMultiBlock = override.fexcoreMultiBlock.ifEmpty { base.fexcoreMultiBlock },
             fexcorePreset = override.fexcorePreset.ifEmpty { base.fexcorePreset },
-            renderer = if (override.renderer != "gl") override.renderer else base.renderer,
-            csmt = if (override.csmt != true) override.csmt else base.csmt,
+            renderer = if ((hasExplicitKeys && explicit("renderer")) || override.renderer != "gl") override.renderer else base.renderer,
+            csmt = if ((hasExplicitKeys && explicit("csmt")) || override.csmt != true) override.csmt else base.csmt,
             videoPciDeviceID = if (override.videoPciDeviceID != 1728) override.videoPciDeviceID else base.videoPciDeviceID,
-            offScreenRenderingMode = if (override.offScreenRenderingMode != "fbo") {
+            offScreenRenderingMode = if ((hasExplicitKeys && explicit("offScreenRenderingMode")) || override.offScreenRenderingMode != "fbo") {
                 override.offScreenRenderingMode
             } else {
                 base.offScreenRenderingMode
             },
-            strictShaderMath = if (override.strictShaderMath != true) override.strictShaderMath else base.strictShaderMath,
-            useDRI3 = if (override.useDRI3 != true) override.useDRI3 else base.useDRI3,
-            videoMemorySize = if (override.videoMemorySize != "2048") override.videoMemorySize else base.videoMemorySize,
-            mouseWarpOverride = if (override.mouseWarpOverride != "disable") override.mouseWarpOverride else base.mouseWarpOverride,
-            sdlControllerAPI = if (override.sdlControllerAPI != true) override.sdlControllerAPI else base.sdlControllerAPI,
-            useSteamInput = if (override.useSteamInput != false) override.useSteamInput else base.useSteamInput,
-            enableXInput = if (override.enableXInput != true) override.enableXInput else base.enableXInput,
-            enableDInput = if (override.enableDInput != true) override.enableDInput else base.enableDInput,
-            dinputMapperType = if (override.dinputMapperType != 1.toByte()) override.dinputMapperType else base.dinputMapperType,
-            disableMouseInput = if (override.disableMouseInput != false) override.disableMouseInput else base.disableMouseInput,
+            strictShaderMath = if ((hasExplicitKeys && explicit("strictShaderMath")) || override.strictShaderMath != true) override.strictShaderMath else base.strictShaderMath,
+            useDRI3 = if ((hasExplicitKeys && explicit("useDRI3")) || override.useDRI3 != true) override.useDRI3 else base.useDRI3,
+            videoMemorySize = if ((hasExplicitKeys && explicit("videoMemorySize")) || override.videoMemorySize != "2048") override.videoMemorySize else base.videoMemorySize,
+            mouseWarpOverride = if ((hasExplicitKeys && explicit("mouseWarpOverride")) || override.mouseWarpOverride != "disable") override.mouseWarpOverride else base.mouseWarpOverride,
+            sdlControllerAPI = if ((hasExplicitKeys && explicit("sdlControllerAPI")) || override.sdlControllerAPI != true) override.sdlControllerAPI else base.sdlControllerAPI,
+            useSteamInput = if ((hasExplicitKeys && explicit("useSteamInput")) || override.useSteamInput != false) override.useSteamInput else base.useSteamInput,
+            enableXInput = if ((hasExplicitKeys && explicit("enableXInput")) || override.enableXInput != true) override.enableXInput else base.enableXInput,
+            enableDInput = if ((hasExplicitKeys && explicit("enableDInput")) || override.enableDInput != true) override.enableDInput else base.enableDInput,
+            dinputMapperType = if ((hasExplicitKeys && explicit("dinputMapperType")) || override.dinputMapperType != 1.toByte()) override.dinputMapperType else base.dinputMapperType,
+            disableMouseInput = if ((hasExplicitKeys && explicit("disableMouseInput")) || override.disableMouseInput != false) override.disableMouseInput else base.disableMouseInput,
             suspendPolicy = override.suspendPolicy.ifEmpty { base.suspendPolicy },
             language = override.language.ifEmpty { base.language },
             forceDlc = if (override.forceDlc != false) override.forceDlc else base.forceDlc,

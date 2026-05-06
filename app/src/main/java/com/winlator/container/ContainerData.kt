@@ -97,6 +97,8 @@ data class ContainerData(
     // LSFG Vulkan frame generation
     /** Whether LSFG frame generation is enabled for this container */
     val lsfgEnabled: Boolean = false,
+    /** Keys explicitly supplied by an external launch override. Not persisted. */
+    val explicitOverrideKeys: Set<String> = emptySet(),
 ) {
     companion object {
         val Saver = mapSaver(

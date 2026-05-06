@@ -61,6 +61,12 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 - If a game has audio and a mapped window but a black screen under DXVK, inspect logcat for `Present`, `DRI3`, `DXGI`, `swapchain`, and `BadImplementation` before changing game files.
 - Dragon Quest Heroes proved a useful pattern: WineD3D/OpenGL showed the title and movies, while DXVK/Vulkan reached D3D11 swapchain creation and then failed in GameNative's X Present path.
 - The Present extension must not reject normal XCB Present requests such as `NotifyMSC` or `QueryCapabilities`. If Vulkan still fails, add exact minor-opcode logs first and then implement the missing protocol request minimally and truthfully.
+- The first DQH `.hgo` canary after minimal `NotifyMSC`/`QueryCapabilities` handling still rendered black, even though the old obvious Present `BadImplementation` disappeared and DXVK recreated a `1280x720` swapchain. Do not keep patching random Present requests unless logs show a new missing opcode.
+- Before deeper code changes, strip high-risk Vulkan defaults in canary launches: remove `MESA_VK_WSI_PRESENT_MODE=mailbox`, remove `WRAPPER_MAX_IMAGE_COUNT=0`, bypass the LSFG implicit layer if possible, and test DRI3 on/off.
+- External launch overrides must preserve explicit keys, even when the supplied value equals GameNative's default. DQH canary launches were accidentally unable to force `dxwrapper=dxvk`, `useDRI3=true`, or default-valued controller/render fields over an existing WineD3D saved profile until `ContainerData.explicitOverrideKeys` was added.
+- External JSON launch parsing must include `graphicsDriverConfig`; otherwise Vulkan canaries fall back to blank wrapper settings and produce misleading env like `MESA_VK_WSI_PRESENT_MODE=`.
+- Do not export blank Vulkan wrapper env vars. Empty values such as `MESA_VK_WSI_PRESENT_MODE=` are not neutral; Mesa logs them as invalid and they muddy the failure signal.
+- Latest DQH `.hgo` FIFO canary after override/env cleanup still black-screens. It now proves the cleaned env is applied (`MESA_VK_WSI_PRESENT_MODE=fifo`, wrapper Vulkan `1.3.0`), but D3D9 DXVK logs `No adapters found` while the D3D11/DXGI path sees a `Wrapper()` adapter and can start a 1x1 swapchain. Next code work should explain that D3D9/D3D11 adapter split before more random present-mode changes.
 - Keep WineD3D as the compatibility fallback for affected games until DXVK is proven visible in a fresh launch.
 
 ## Android MediaCodec / GStreamer Focus

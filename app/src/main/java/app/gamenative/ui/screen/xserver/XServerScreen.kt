@@ -4836,7 +4836,9 @@ private fun extractGraphicsDriverFiles(
         envVars.put("WRAPPER_VK_VERSION", vulkanVersion)
 
         val blacklistedExtensions: String? = graphicsDriverConfig.get("blacklistedExtensions")
-        envVars.put("WRAPPER_EXTENSION_BLACKLIST", blacklistedExtensions)
+        if (!blacklistedExtensions.isNullOrBlank()) {
+            envVars.put("WRAPPER_EXTENSION_BLACKLIST", blacklistedExtensions)
+        }
 
         val gpuName = graphicsDriverConfig.get("gpuName")
         if (gpuName != "Device") {
@@ -4853,16 +4855,22 @@ private fun extractGraphicsDriverFiles(
         if (presentMode.contains("immediate")) {
             envVars.put("WRAPPER_MAX_IMAGE_COUNT", "1")
         }
-        envVars.put("MESA_VK_WSI_PRESENT_MODE", presentMode)
+        if (presentMode.isNotBlank()) {
+            envVars.put("MESA_VK_WSI_PRESENT_MODE", presentMode)
+        }
 
         val resourceType = graphicsDriverConfig.get("resourceType")
-        envVars.put("WRAPPER_RESOURCE_TYPE", resourceType)
+        if (resourceType.isNotBlank()) {
+            envVars.put("WRAPPER_RESOURCE_TYPE", resourceType)
+        }
 
         val syncFrame = graphicsDriverConfig.get("syncFrame")
         if (syncFrame == "1") envVars.put("MESA_VK_WSI_DEBUG", "forcesync")
 
         val disablePresentWait = graphicsDriverConfig.get("disablePresentWait")
-        envVars.put("WRAPPER_DISABLE_PRESENT_WAIT", disablePresentWait)
+        if (disablePresentWait.isNotBlank()) {
+            envVars.put("WRAPPER_DISABLE_PRESENT_WAIT", disablePresentWait)
+        }
 
         val bcnEmulation = graphicsDriverConfig.get("bcnEmulation")
         val bcnEmulationType = graphicsDriverConfig.get("bcnEmulationType")
@@ -4886,7 +4894,9 @@ private fun extractGraphicsDriverFiles(
         }
 
         val bcnEmulationCache = graphicsDriverConfig.get("bcnEmulationCache")
-        envVars.put("WRAPPER_USE_BCN_CACHE", bcnEmulationCache)
+        if (bcnEmulationCache.isNotBlank()) {
+            envVars.put("WRAPPER_USE_BCN_CACHE", bcnEmulationCache)
+        }
 
         if (!vkbasaltConfig.isEmpty()) {
             envVars.put("ENABLE_VKBASALT", "1")
