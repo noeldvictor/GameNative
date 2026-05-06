@@ -33,9 +33,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import timber.log.Timber;
+
 public class PresentExtension implements Extension {
     public static final byte MAJOR_OPCODE = -103;
     private static final int FAKE_INTERVAL_DEFAULT_US = 1_000_000 / 60;
+    private static final int CAPABILITY_ASYNC = 1;
+    private static final int CAPABILITY_FENCE = 2;
+    private static final int CAPABILITY_UST = 4;
     public enum Kind {PIXMAP, MSC_NOTIFY}
     public enum Mode {COPY, FLIP, SKIP}
     private final SparseArray<Event> events = new SparseArray<>();
@@ -86,7 +91,9 @@ public class PresentExtension implements Extension {
     private static abstract class ClientOpcodes {
         private static final byte QUERY_VERSION = 0;
         private static final byte PRESENT_PIXMAP = 1;
+        private static final byte NOTIFY_MSC = 2;
         private static final byte SELECT_INPUT = 3;
+        private static final byte QUERY_CAPABILITIES = 4;
     }
 
     private static class Event {
@@ -238,6 +245,20 @@ public class PresentExtension implements Extension {
         }
     }
 
+    private void notifyMSC(XClient client, XInputStream inputStream, XOutputStream outputStream) throws IOException, XRequestError {
+        int windowId = inputStream.readInt();
+        int serial = inputStream.readInt();
+        inputStream.skip(4);
+        inputStream.skip(24);
+        inputStream.skip(client.getRemainingRequestLength());
+
+        final Window window = client.xServer.windowManager.getWindow(windowId);
+        if (window == null) throw new BadWindow(windowId);
+
+        long nowUst = System.nanoTime() / 1000;
+        sendCompleteNotify(window, serial, Kind.MSC_NOTIFY, Mode.COPY, nowUst, nowUst / FAKE_INTERVAL_DEFAULT_US);
+    }
+
     private void selectInput(XClient client, XInputStream inputStream, XOutputStream outputStream) throws IOException, XRequestError {
         int eventId = inputStream.readInt();
         int windowId = inputStream.readInt();
@@ -276,6 +297,20 @@ public class PresentExtension implements Extension {
         }
     }
 
+    private static void queryCapabilities(XClient client, XInputStream inputStream, XOutputStream outputStream) throws IOException {
+        inputStream.skip(4);
+        inputStream.skip(client.getRemainingRequestLength());
+
+        try (XStreamLock lock = outputStream.lock()) {
+            outputStream.writeByte(RESPONSE_CODE_SUCCESS);
+            outputStream.writeByte((byte)0);
+            outputStream.writeShort(client.getSequenceNumber());
+            outputStream.writeInt(0);
+            outputStream.writeInt(CAPABILITY_ASYNC | CAPABILITY_FENCE | CAPABILITY_UST);
+            outputStream.writePad(20);
+        }
+    }
+
     @Override
     public void handleRequest(XClient client, XInputStream inputStream, XOutputStream outputStream) throws IOException, XRequestError {
         int opcode = client.getRequestData();
@@ -290,12 +325,22 @@ public class PresentExtension implements Extension {
                     presentPixmap(client, inputStream, outputStream);
                 }
                 break;
+            case ClientOpcodes.NOTIFY_MSC:
+                try (XLock lock = client.xServer.lock(XServer.Lockable.WINDOW_MANAGER)) {
+                    notifyMSC(client, inputStream, outputStream);
+                }
+                break;
             case ClientOpcodes.SELECT_INPUT:
                 try (XLock lock = client.xServer.lock(XServer.Lockable.WINDOW_MANAGER)) {
                     selectInput(client, inputStream, outputStream);
                 }
                 break;
+            case ClientOpcodes.QUERY_CAPABILITIES:
+                queryCapabilities(client, inputStream, outputStream);
+                break;
             default:
+                Timber.w("PresentExtension: unhandled minor opcode=%d requestLength=%d remaining=%d",
+                        opcode, client.getRequestLength(), client.getRemainingRequestLength());
                 throw new BadImplementation();
         }
     }

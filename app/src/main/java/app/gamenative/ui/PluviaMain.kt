@@ -147,6 +147,9 @@ private fun NavHostController.navigateFromLoginIfNeeded(
     }
 }
 
+private fun isHgoCustomDebugBuild(): Boolean =
+    BuildConfig.DEBUG && BuildConfig.APPLICATION_ID.endsWith(".hgo")
+
 private sealed class GameResolutionResult {
     data class Success(
         val finalAppId: String,
@@ -522,6 +525,12 @@ fun PluviaMain(
                 }
 
                 MainViewModel.MainUiEvent.OnLoggedOut -> {
+                    if (isHgoCustomDebugBuild()) {
+                        navController.navigate(PluviaScreen.Home.route + "?offline=true") {
+                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                        }
+                        return@collect
+                    }
                     // Clear persisted route so next login starts fresh from Home
                     viewModel.clearPersistedRoute()
                     // Pop stack and go back to login
@@ -661,7 +670,8 @@ fun PluviaMain(
             // Only attempt reconnection if not already connected/connecting and not in offline mode
             val shouldAttemptReconnect = !state.isSteamConnected &&
                 !isConnecting &&
-                !SteamService.keepAlive
+                !SteamService.keepAlive &&
+                !isHgoCustomDebugBuild()
 
             if (shouldAttemptReconnect) {
                 Timber.d("[PluviaMain]: Steam not connected - attempting reconnection")
@@ -1239,7 +1249,7 @@ fun PluviaMain(
             }
 
             // Connection status banner (overlay) - dismissible so users can access navigation
-            if (state.currentScreen != PluviaScreen.LoginUser && !connectionBannerDismissed && initialConnectDone && !state.isSteamConnected &&
+            if (!isHgoCustomDebugBuild() && state.currentScreen != PluviaScreen.LoginUser && !connectionBannerDismissed && initialConnectDone && !state.isSteamConnected &&
                 SteamUtils.hasStoredCredentials()) {
                 Box(modifier = Modifier.zIndex(5f)) {
                     ConnectionStatusBanner(
@@ -1262,6 +1272,7 @@ fun PluviaMain(
 
             val startDestination = rememberSaveable {
                 when {
+                    isHgoCustomDebugBuild() -> PluviaScreen.Home.route + "?offline=true"
                     SteamService.isLoggedIn -> PluviaScreen.Home.route + "?offline=false"
                     // skip login screen if any service has stored credentials
                     SteamUtils.hasStoredCredentials() ||
@@ -1684,7 +1695,9 @@ fun preLaunchApp(
                 ).await()
             }
 
-            if (!container.isUseLegacyDRM && !container.isLaunchRealSteam &&
+            if (isCustomGame) {
+                Timber.tag("preLaunchApp").i("Custom Game launch: skipping Steam-specific experimental component")
+            } else if (!container.isUseLegacyDRM && !container.isLaunchRealSteam &&
                 !SteamService.isFileInstallable(context, "experimental-drm-20260116.tzst")
             ) {
                 setLoadingMessage("Downloading extras")

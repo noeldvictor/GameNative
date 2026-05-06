@@ -2,10 +2,12 @@ package app.gamenative.utils
 
 import android.content.Context
 import android.content.Intent
+import android.util.Base64
 import app.gamenative.PrefManager
 import app.gamenative.data.GameSource
 import com.winlator.container.Container
 import com.winlator.container.ContainerData
+import java.io.File
 import com.winlator.core.DXVKHelper
 import org.json.JSONObject
 import timber.log.Timber
@@ -19,6 +21,7 @@ object IntentLaunchManager {
 
     private const val EXTRA_GAME_SOURCE = "game_source"
     private const val EXTRA_CONTAINER_CONFIG = "container_config"
+    private const val EXTRA_CONTAINER_CONFIG_B64 = "container_config_b64"
     private const val ACTION_LAUNCH_GAME = "app.gamenative.LAUNCH_GAME"
     private const val MAX_CONFIG_JSON_SIZE = 50000 // 50KB limit to prevent memory exhaustion
 
@@ -54,6 +57,9 @@ object IntentLaunchManager {
         Timber.d("[IntentLaunchManager]: Converted to appId: $appId")
 
         val containerConfigJson = intent.getStringExtra(EXTRA_CONTAINER_CONFIG)
+            ?: intent.getStringExtra(EXTRA_CONTAINER_CONFIG_B64)?.let { encoded ->
+                String(Base64.decode(encoded, Base64.DEFAULT), Charsets.UTF_8)
+            }
         val containerConfig = if (containerConfigJson != null) {
             try {
                 parseContainerConfig(containerConfigJson)
@@ -96,6 +102,38 @@ object IntentLaunchManager {
         }
     }
 
+    fun registerCustomGameFromLaunchIntent(appId: String, configOverride: ContainerData?) {
+        if (!appId.startsWith("${GameSource.CUSTOM_GAME.name}_") || configOverride == null) {
+            return
+        }
+
+        val installPath = configOverride.installPath.trim()
+        if (installPath.isEmpty()) {
+            return
+        }
+
+        val idPart = appId.removePrefix("${GameSource.CUSTOM_GAME.name}_").toIntOrNull()
+        if (idPart == null || idPart <= 0) {
+            Timber.w("[IntentLaunchManager]: Cannot register Custom Game from invalid appId: $appId")
+            return
+        }
+
+        val folder = File(installPath)
+        if (!folder.exists() || !folder.isDirectory) {
+            Timber.w("[IntentLaunchManager]: Cannot register missing Custom Game folder: $installPath")
+            return
+        }
+
+        val folders = PrefManager.customGameManualFolders.toMutableSet()
+        if (folders.add(folder.absolutePath)) {
+            PrefManager.customGameManualFolders = folders
+            Timber.i("[IntentLaunchManager]: Added Custom Game folder from launch intent: ${folder.absolutePath}")
+        }
+
+        GameMetadataManager.update(folder, appId = idPart)
+        CustomGameScanner.invalidateCache()
+    }
+
     fun getEffectiveContainerConfig(context: Context, appId: String): ContainerData? {
         return try {
             val baseConfig = if (ContainerUtils.hasContainer(context, appId)) {
@@ -106,11 +144,12 @@ object IntentLaunchManager {
             }
 
             val override = TemporaryConfigStore.getOverride(appId)
+            val normalizedBase = baseConfig?.withLaunchDefaults()
 
             when {
-                override != null && baseConfig != null -> mergeConfigurations(baseConfig, override)
-                override != null -> override
-                else -> baseConfig
+                override != null && normalizedBase != null -> mergeConfigurations(normalizedBase, override)
+                override != null -> override.withLaunchDefaults()
+                else -> normalizedBase
             }
         } catch (e: Exception) {
             Timber.e(e, "[IntentLaunchManager]: Failed to get effective container config for app $appId")
@@ -195,7 +234,7 @@ object IntentLaunchManager {
             graphicsDriverVersion = if (json.has("graphicsDriverVersion")) json.getString("graphicsDriverVersion") else "",
             dxwrapper = if (json.has("dxwrapper")) json.getString("dxwrapper") else Container.DEFAULT_DXWRAPPER,
             dxwrapperConfig = if (json.has("dxwrapperConfig")) {
-                "version=" + json.getString("dxwrapperConfig")
+                normalizeDxWrapperConfig(json.getString("dxwrapperConfig"))
             } else {
                 ""
             },
@@ -207,6 +246,8 @@ object IntentLaunchManager {
             installPath = if (json.has("installPath")) json.getString("installPath") else "",
             showFPS = if (json.has("showFPS")) json.getBoolean("showFPS") else false,
             launchRealSteam = if (json.has("launchRealSteam")) json.getBoolean("launchRealSteam") else false,
+            allowSteamUpdates = if (json.has("allowSteamUpdates")) json.getBoolean("allowSteamUpdates") else false,
+            steamType = if (json.has("steamType")) json.getString("steamType") else "normal",
             cpuList = if (json.has("cpuList")) json.getString("cpuList") else Container.getFallbackCPUList(),
             cpuListWoW64 = if (json.has("cpuListWoW64")) json.getString("cpuListWoW64") else Container.getFallbackCPUListWoW64(),
             wow64Mode = if (json.has("wow64Mode")) json.getBoolean("wow64Mode") else true,
@@ -220,13 +261,24 @@ object IntentLaunchManager {
             box86Preset = if (json.has("box86Preset")) json.getString("box86Preset") else "",
             box64Preset = if (json.has("box64Preset")) json.getString("box64Preset") else "",
             desktopTheme = if (json.has("desktopTheme")) json.getString("desktopTheme") else "",
+            containerVariant = if (json.has("containerVariant")) json.getString("containerVariant") else Container.DEFAULT_VARIANT,
+            wineVersion = if (json.has("wineVersion")) json.getString("wineVersion") else "",
+            emulator = if (json.has("emulator")) json.getString("emulator") else Container.DEFAULT_EMULATOR,
+            fexcoreVersion = if (json.has("fexcoreVersion")) json.getString("fexcoreVersion") else "",
+            fexcoreTSOMode = if (json.has("fexcoreTSOMode")) json.getString("fexcoreTSOMode") else "Fast",
+            fexcoreX87Mode = if (json.has("fexcoreX87Mode")) json.getString("fexcoreX87Mode") else "Fast",
+            fexcoreMultiBlock = if (json.has("fexcoreMultiBlock")) json.getString("fexcoreMultiBlock") else "Disabled",
+            fexcorePreset = if (json.has("fexcorePreset")) json.getString("fexcorePreset") else "",
+            renderer = if (json.has("renderer")) json.getString("renderer") else "gl",
             csmt = if (json.has("csmt")) json.getBoolean("csmt") else true,
             videoPciDeviceID = if (json.has("videoPciDeviceID")) json.getInt("videoPciDeviceID") else 1728,
             offScreenRenderingMode = if (json.has("offScreenRenderingMode")) json.getString("offScreenRenderingMode") else "fbo",
             strictShaderMath = if (json.has("strictShaderMath")) json.getBoolean("strictShaderMath") else true,
+            useDRI3 = if (json.has("useDRI3")) json.getBoolean("useDRI3") else true,
             videoMemorySize = if (json.has("videoMemorySize")) json.getString("videoMemorySize") else "2048",
             mouseWarpOverride = if (json.has("mouseWarpOverride")) json.getString("mouseWarpOverride") else "disable",
             sdlControllerAPI = if (json.has("sdlControllerAPI")) json.getBoolean("sdlControllerAPI") else true,
+            useSteamInput = if (json.has("useSteamInput")) json.getBoolean("useSteamInput") else false,
             enableXInput = if (json.has("enableXInput")) json.getBoolean("enableXInput") else true,
             enableDInput = if (json.has("enableDInput")) json.getBoolean("enableDInput") else true,
             dinputMapperType = if (json.has("dinputMapperType")) {
@@ -240,6 +292,12 @@ object IntentLaunchManager {
             } else {
                 PrefManager.suspendPolicy
             },
+            language = if (json.has("language")) json.getString("language") else "english",
+            forceDlc = if (json.has("forceDlc")) json.getBoolean("forceDlc") else false,
+            localSavesOnly = if (json.has("localSavesOnly")) json.getBoolean("localSavesOnly") else false,
+            steamOfflineMode = if (json.has("steamOfflineMode")) json.getBoolean("steamOfflineMode") else false,
+            useLegacyDRM = if (json.has("useLegacyDRM")) json.getBoolean("useLegacyDRM") else false,
+            unpackFiles = if (json.has("unpackFiles")) json.getBoolean("unpackFiles") else false,
             shaderBackend = if (json.has("shaderBackend")) json.getString("shaderBackend") else "glsl",
             useGLSL = if (json.has("useGLSL")) json.getString("useGLSL") else "enabled",
         )
@@ -250,6 +308,53 @@ object IntentLaunchManager {
         }
 
         return config
+    }
+
+    private fun normalizeDxWrapperConfig(rawConfig: String): String {
+        val config = rawConfig.trim()
+        if (config.isEmpty()) return ""
+
+        val firstEntry = config.substringBefore(",")
+        return if (firstEntry.contains("=")) config else "version=$config"
+    }
+
+    private fun ContainerData.withLaunchDefaults(): ContainerData {
+        val defaults = ContainerData()
+        return copy(
+            screenSize = screenSize.ifBlank { defaults.screenSize },
+            envVars = envVars.ifBlank { defaults.envVars },
+            graphicsDriver = graphicsDriver.ifBlank { defaults.graphicsDriver },
+            graphicsDriverVersion = graphicsDriverVersion.ifBlank { defaults.graphicsDriverVersion },
+            dxwrapper = dxwrapper.ifBlank { defaults.dxwrapper },
+            dxwrapperConfig = dxwrapperConfig.ifBlank { DXVKHelper.DEFAULT_CONFIG },
+            audioDriver = audioDriver.ifBlank { defaults.audioDriver },
+            wincomponents = wincomponents.ifBlank { defaults.wincomponents },
+            drives = drives.ifBlank { defaults.drives },
+            steamType = steamType.ifBlank { defaults.steamType },
+            cpuList = cpuList.ifBlank { defaults.cpuList },
+            cpuListWoW64 = cpuListWoW64.ifBlank { defaults.cpuListWoW64 },
+            box86Version = box86Version.ifBlank { defaults.box86Version },
+            box64Version = box64Version.ifBlank { defaults.box64Version },
+            box86Preset = box86Preset.ifBlank { defaults.box86Preset },
+            box64Preset = box64Preset.ifBlank { defaults.box64Preset },
+            desktopTheme = desktopTheme.ifBlank { defaults.desktopTheme },
+            containerVariant = containerVariant.ifBlank { defaults.containerVariant },
+            wineVersion = wineVersion.ifBlank { defaults.wineVersion },
+            emulator = emulator.ifBlank { defaults.emulator },
+            fexcoreVersion = fexcoreVersion.ifBlank { defaults.fexcoreVersion },
+            fexcoreTSOMode = fexcoreTSOMode.ifBlank { defaults.fexcoreTSOMode },
+            fexcoreX87Mode = fexcoreX87Mode.ifBlank { defaults.fexcoreX87Mode },
+            fexcoreMultiBlock = fexcoreMultiBlock.ifBlank { defaults.fexcoreMultiBlock },
+            fexcorePreset = fexcorePreset.ifBlank { defaults.fexcorePreset },
+            renderer = renderer.ifBlank { defaults.renderer },
+            offScreenRenderingMode = offScreenRenderingMode.ifBlank { defaults.offScreenRenderingMode },
+            videoMemorySize = videoMemorySize.ifBlank { defaults.videoMemorySize },
+            mouseWarpOverride = mouseWarpOverride.ifBlank { defaults.mouseWarpOverride },
+            suspendPolicy = suspendPolicy.ifBlank { defaults.suspendPolicy },
+            language = language.ifBlank { defaults.language },
+            shaderBackend = shaderBackend.ifBlank { defaults.shaderBackend },
+            useGLSL = useGLSL.ifBlank { defaults.useGLSL },
+        )
     }
 
     private fun mergeConfigurations(base: ContainerData, override: ContainerData): ContainerData {
@@ -289,6 +394,12 @@ object IntentLaunchManager {
             // Boolean fields: only override if different from parsing defaults
             showFPS = if (override.showFPS != false) override.showFPS else base.showFPS,
             launchRealSteam = if (override.launchRealSteam != false) override.launchRealSteam else base.launchRealSteam,
+            allowSteamUpdates = if (override.allowSteamUpdates != false) {
+                override.allowSteamUpdates
+            } else {
+                base.allowSteamUpdates
+            },
+            steamType = override.steamType.ifEmpty { base.steamType },
             cpuList = if (override.cpuList != Container.getFallbackCPUList()) override.cpuList else base.cpuList,
             cpuListWoW64 = if (override.cpuListWoW64 != Container.getFallbackCPUListWoW64()) {
                 override.cpuListWoW64
@@ -306,6 +417,15 @@ object IntentLaunchManager {
             box86Preset = override.box86Preset.ifEmpty { base.box86Preset },
             box64Preset = override.box64Preset.ifEmpty { base.box64Preset },
             desktopTheme = override.desktopTheme.ifEmpty { base.desktopTheme },
+            containerVariant = override.containerVariant.ifEmpty { base.containerVariant },
+            wineVersion = override.wineVersion.ifEmpty { base.wineVersion },
+            emulator = override.emulator.ifEmpty { base.emulator },
+            fexcoreVersion = override.fexcoreVersion.ifEmpty { base.fexcoreVersion },
+            fexcoreTSOMode = override.fexcoreTSOMode.ifEmpty { base.fexcoreTSOMode },
+            fexcoreX87Mode = override.fexcoreX87Mode.ifEmpty { base.fexcoreX87Mode },
+            fexcoreMultiBlock = override.fexcoreMultiBlock.ifEmpty { base.fexcoreMultiBlock },
+            fexcorePreset = override.fexcorePreset.ifEmpty { base.fexcorePreset },
+            renderer = if (override.renderer != "gl") override.renderer else base.renderer,
             csmt = if (override.csmt != true) override.csmt else base.csmt,
             videoPciDeviceID = if (override.videoPciDeviceID != 1728) override.videoPciDeviceID else base.videoPciDeviceID,
             offScreenRenderingMode = if (override.offScreenRenderingMode != "fbo") {
@@ -314,14 +434,22 @@ object IntentLaunchManager {
                 base.offScreenRenderingMode
             },
             strictShaderMath = if (override.strictShaderMath != true) override.strictShaderMath else base.strictShaderMath,
+            useDRI3 = if (override.useDRI3 != true) override.useDRI3 else base.useDRI3,
             videoMemorySize = if (override.videoMemorySize != "2048") override.videoMemorySize else base.videoMemorySize,
             mouseWarpOverride = if (override.mouseWarpOverride != "disable") override.mouseWarpOverride else base.mouseWarpOverride,
             sdlControllerAPI = if (override.sdlControllerAPI != true) override.sdlControllerAPI else base.sdlControllerAPI,
+            useSteamInput = if (override.useSteamInput != false) override.useSteamInput else base.useSteamInput,
             enableXInput = if (override.enableXInput != true) override.enableXInput else base.enableXInput,
             enableDInput = if (override.enableDInput != true) override.enableDInput else base.enableDInput,
             dinputMapperType = if (override.dinputMapperType != 1.toByte()) override.dinputMapperType else base.dinputMapperType,
             disableMouseInput = if (override.disableMouseInput != false) override.disableMouseInput else base.disableMouseInput,
-            suspendPolicy = base.suspendPolicy,
+            suspendPolicy = override.suspendPolicy.ifEmpty { base.suspendPolicy },
+            language = override.language.ifEmpty { base.language },
+            forceDlc = if (override.forceDlc != false) override.forceDlc else base.forceDlc,
+            localSavesOnly = if (override.localSavesOnly != false) override.localSavesOnly else base.localSavesOnly,
+            steamOfflineMode = if (override.steamOfflineMode != false) override.steamOfflineMode else base.steamOfflineMode,
+            useLegacyDRM = if (override.useLegacyDRM != false) override.useLegacyDRM else base.useLegacyDRM,
+            unpackFiles = if (override.unpackFiles != false) override.unpackFiles else base.unpackFiles,
             shaderBackend = if (override.shaderBackend != "glsl") override.shaderBackend else base.shaderBackend,
             useGLSL = if (override.useGLSL != "enabled") override.useGLSL else base.useGLSL,
         )

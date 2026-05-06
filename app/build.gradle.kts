@@ -112,6 +112,7 @@ android {
             isDebuggable = true
             isMinifyEnabled = false
             isShrinkResources = false
+            applicationIdSuffix = ".hgo"
             signingConfig = signingConfigs.getByName("debug")
         }
         release {

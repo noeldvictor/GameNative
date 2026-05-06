@@ -243,6 +243,7 @@ class MainActivity : ComponentActivity() {
             val launchRequest = IntentLaunchManager.parseLaunchIntent(intent)
             if (launchRequest != null) {
                 Timber.d("[IntentLaunch]: Received external launch intent for app ${launchRequest.appId}")
+                IntentLaunchManager.registerCustomGameFromLaunchIntent(launchRequest.appId, launchRequest.containerConfig)
 
                 if (isNewIntent) {
                     // supersedes any stale pending request

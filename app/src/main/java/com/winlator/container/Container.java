@@ -554,11 +554,16 @@ public class Container {
     }
 
     public String getDesktopTheme() {
+        if (desktopTheme == null || desktopTheme.trim().isEmpty()) {
+            desktopTheme = WineThemeManager.DEFAULT_DESKTOP_THEME;
+        }
         return desktopTheme;
     }
 
     public void setDesktopTheme(String desktopTheme) {
-        this.desktopTheme = desktopTheme;
+        this.desktopTheme = (desktopTheme == null || desktopTheme.trim().isEmpty())
+                ? WineThemeManager.DEFAULT_DESKTOP_THEME
+                : desktopTheme;
     }
 
     public int getRCFileId() {

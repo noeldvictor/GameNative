@@ -1,5 +1,6 @@
 package app.gamenative.ui.data
 
+import app.gamenative.BuildConfig
 import app.gamenative.PrefManager
 import app.gamenative.data.GameCompatibilityStatus
 import app.gamenative.data.LibraryItem
@@ -7,6 +8,13 @@ import app.gamenative.ui.enums.AppFilter
 import app.gamenative.ui.enums.LibraryTab
 import app.gamenative.ui.enums.SortOption
 import java.util.EnumSet
+
+private fun defaultLibraryTab(): LibraryTab =
+    if (BuildConfig.DEBUG && BuildConfig.APPLICATION_ID.endsWith(".hgo")) {
+        LibraryTab.LOCAL
+    } else {
+        LibraryTab.ALL
+    }
 
 data class LibraryState(
     val appInfoSortType: EnumSet<AppFilter> = PrefManager.libraryFilter,
@@ -47,7 +55,7 @@ data class LibraryState(
     val isOptionsPanelOpen: Boolean = false,
 
     // Current library tab for quick filter access
-    val currentTab: LibraryTab = LibraryTab.ALL,
+    val currentTab: LibraryTab = defaultLibraryTab(),
 
     // Per-source game counts for tab badges
     val allCount: Int = 0,

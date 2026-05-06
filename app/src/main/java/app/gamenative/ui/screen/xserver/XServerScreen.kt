@@ -102,6 +102,7 @@ import app.gamenative.ui.widget.PerformanceHudView
 import app.gamenative.utils.ContainerUtils
 import app.gamenative.utils.CustomGameScanner
 import app.gamenative.utils.ExecutableSelectionUtils
+import app.gamenative.utils.IntentLaunchManager
 import app.gamenative.utils.LsfgQuickMenuHelper
 import app.gamenative.utils.ManifestComponentHelper
 import app.gamenative.utils.PreInstallSteps
@@ -328,7 +329,22 @@ fun XServerScreen(
     }
 
     val container = remember(appId) {
-        ContainerUtils.getContainer(context, appId)
+        val loadedContainer = ContainerUtils.getContainer(context, appId)
+        IntentLaunchManager.getEffectiveContainerConfig(context, appId)?.let { effectiveConfig ->
+            val gameSource = ContainerUtils.extractGameSourceFromContainerId(appId)
+            val saveOverrideToDisk = gameSource == GameSource.CUSTOM_GAME
+            ContainerUtils.applyToContainer(
+                context,
+                loadedContainer,
+                effectiveConfig,
+                saveToDisk = saveOverrideToDisk,
+            )
+            Timber.i(
+                "Applied external launch config before XServer for $appId " +
+                    "(saveToDisk=$saveOverrideToDisk)",
+            )
+        }
+        loadedContainer
     }
 
     val suspendPolicy = remember(container.id) { container.suspendPolicy }

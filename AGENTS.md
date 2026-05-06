@@ -56,6 +56,13 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 - For optional runtime experiments, prefer a separate archive such as `gstreamer_androidmedia.tzst` and extract it only when present. Missing optional archives must be non-fatal.
 - If adding executable libraries to imagefs, set permissions and log the installed path.
 
+## Vulkan / DXVK Presentation
+
+- If a game has audio and a mapped window but a black screen under DXVK, inspect logcat for `Present`, `DRI3`, `DXGI`, `swapchain`, and `BadImplementation` before changing game files.
+- Dragon Quest Heroes proved a useful pattern: WineD3D/OpenGL showed the title and movies, while DXVK/Vulkan reached D3D11 swapchain creation and then failed in GameNative's X Present path.
+- The Present extension must not reject normal XCB Present requests such as `NotifyMSC` or `QueryCapabilities`. If Vulkan still fails, add exact minor-opcode logs first and then implement the missing protocol request minimally and truthfully.
+- Keep WineD3D as the compatibility fallback for affected games until DXVK is proven visible in a fresh launch.
+
 ## Android MediaCodec / GStreamer Focus
 
 - Current fork patch `0b41a266` wires the optional Bionic `gstreamer_androidmedia.tzst` path and app-side GStreamer Android callback helpers.

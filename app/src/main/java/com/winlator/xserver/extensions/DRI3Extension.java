@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
+import timber.log.Timber;
+
 public class DRI3Extension implements Extension {
     public static final byte MAJOR_OPCODE = -102;
     private byte firstEventId = 0;
@@ -207,6 +209,8 @@ public class DRI3Extension implements Extension {
                 }
                 break;
             default:
+                Timber.w("DRI3Extension: unhandled minor opcode=%d requestLength=%d remaining=%d",
+                        opcode, client.getRequestLength(), client.getRemainingRequestLength());
                 throw new BadImplementation();
         }
     }

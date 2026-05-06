@@ -170,8 +170,13 @@ static void initialize_all_pads(void)
     for (int i = 0; i < players; ++i) {
 
         char path[256];
+        const char *mem_dir = getenv("EVSHIM_MEM_DIR");
+        if (!mem_dir || !mem_dir[0]) {
+            mem_dir = "/sdcard/GameNativeHGO";
+        }
         snprintf(path, sizeof path,
-                 "/data/data/app.gamenative/files/imagefs/tmp/gamepad%s.mem",
+                 "%s/gamepad%s.mem",
+                 mem_dir,
                  (i == 0) ? "" : (char[2]){'0' + i, '\0'});
 
         /* open once – store for reader + writer */

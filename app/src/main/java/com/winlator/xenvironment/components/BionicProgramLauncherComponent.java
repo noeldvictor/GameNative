@@ -180,21 +180,24 @@ public class BionicProgramLauncherComponent extends GuestProgramLauncherComponen
     }
 
     private int execGuestProgram() {
+        Context context = environment.getContext();
+        ImageFs imageFs = ImageFs.find(context);
+        File rootDir = imageFs.getRootDir();
+        File gamepadTmpDir = getEvshimMemDir(context, imageFs);
 
         // Always pre-create all 4 mem files so controllers can be hot-plugged during gameplay.
         // Unused gamepads just read zeroes (no-op in evshim).
         final int enabledPlayerCount = WinHandler.MAX_PLAYERS;
         for (int i = 0; i < enabledPlayerCount; i++) {
-            String memPath;
+            File memFile;
             if (i == 0) {
                 // Player 1 uses the original, non-numbered path that is known to work.
-                memPath = "/data/data/app.gamenative/files/imagefs/tmp/gamepad.mem";
+                memFile = new File(gamepadTmpDir, "gamepad.mem");
             } else {
                 // Players 2, 3, 4 use a 1-based index.
-                memPath = "/data/data/app.gamenative/files/imagefs/tmp/gamepad" + i + ".mem";
+                memFile = new File(gamepadTmpDir, "gamepad" + i + ".mem");
             }
 
-            File memFile = new File(memPath);
             memFile.getParentFile().mkdirs();
             try (RandomAccessFile raf = new RandomAccessFile(memFile, "rw")) {
                 raf.setLength(64);
@@ -202,9 +205,6 @@ public class BionicProgramLauncherComponent extends GuestProgramLauncherComponen
                 Log.e("EVSHIM_HOST", "Failed to create mem file for player index "+i, e);
             }
         }
-        Context context = environment.getContext();
-        ImageFs imageFs = ImageFs.find(context);
-        File rootDir = imageFs.getRootDir();
 
         PrefManager.init(context);
         boolean enableBox86_64Logs = PrefManager.getBoolean("enable_box86_64_logs", true);
@@ -301,17 +301,29 @@ public class BionicProgramLauncherComponent extends GuestProgramLauncherComponen
         String ld_preload = "";
         String sysvPath = imageFs.getLibDir() + "/libandroid-sysvshm.so";
         String evshimPath = imageFs.getLibDir() + "/libevshim.so";
+        if (context.getPackageName().endsWith(".hgo")) {
+            String apkEvshimPath = context.getApplicationInfo().nativeLibraryDir + "/libevshim.so";
+            if (new File(apkEvshimPath).exists()) {
+                evshimPath = apkEvshimPath;
+                Log.i("BionicProgramLauncherComponent", "HGO debug package: using APK libevshim.so at " + evshimPath);
+            }
+        }
         String replacePath = imageFs.getLibDir() + "/libredirect-bionic.so";
 
         if (new File(sysvPath).exists()) ld_preload += sysvPath;
 
 
         ld_preload += ":" + evshimPath;
-        ld_preload += ":" + replacePath;
+        if (context.getPackageName().endsWith(".hgo")) {
+            Log.i("BionicProgramLauncherComponent", "HGO debug package: skipping hardcoded libredirect-bionic.so preload");
+        } else {
+            ld_preload += ":" + replacePath;
+        }
 
         envVars.put("LD_PRELOAD", ld_preload);
 
         envVars.put("EVSHIM_SHM_NAME", "controller-shm0");
+        envVars.put("EVSHIM_MEM_DIR", gamepadTmpDir.getPath());
 
         // Check for specific shared memory libraries
 //        if ((new File(imageFs.getLibDir(), "libandroid-sysvshm.so")).exists()){
@@ -379,6 +391,13 @@ public class BionicProgramLauncherComponent extends GuestProgramLauncherComponen
         else
             command = binDir + "/box64 " + guestExecutable;
         return command;
+    }
+
+    private File getEvshimMemDir(Context context, ImageFs imageFs) {
+        if (context.getPackageName().endsWith(".hgo")) {
+            return new File("/sdcard/GameNativeHGO");
+        }
+        return new File(imageFs.getRootDir(), "tmp");
     }
 
     private void extractBox64Files() {
