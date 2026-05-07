@@ -94,6 +94,7 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 - Controller usability is a release gate for handheld work.
 - For game helper overlays launched through GameNative, controller menus must open, navigate, confirm, back out, and close without keyboard/mouse.
+- Cheat/helper overlays must show toggle state directly on the buttons with clear text such as `ON`, `OFF`, `ACTIVE`, or `LOCKED`, plus a distinct active visual state. AYN Thor users should never have to guess whether a cheat press registered.
 - Avoid adding extra handheld hotkey chords unless the user asks. The preferred cheat-menu toggle for game-local helpers is `L3+R3`.
 - The lab fork is branded as `GameNative AYN Thor AI Lab` and should stay visibly distinct from public GameNative during experiments. Keep the package id stable unless the user explicitly asks to break update compatibility.
 - The `.hgo` lab build should start cleanly without the automatic Ko-fi/thank-you support splash. Keep crash and update dialogs functional unless the user asks to remove those too.
