@@ -88,6 +88,7 @@ import app.gamenative.utils.ManifestComponentHelper
 import app.gamenative.utils.ManifestContentTypes
 import app.gamenative.utils.ManifestData
 import app.gamenative.utils.ManifestEntry
+import app.gamenative.utils.ManifestInstallResult
 import app.gamenative.utils.ManifestInstaller
 import app.gamenative.service.SteamService
 import app.gamenative.utils.ManifestComponentHelper.VersionOptionList
@@ -383,7 +384,7 @@ fun ContainerConfigDialog(
             label: String,
             isDriver: Boolean,
             expectedType: ContentProfile.ContentType?,
-            onInstalled: () -> Unit,
+            onInstalled: (ManifestInstallResult) -> Unit,
         ) {
             if (manifestInstallInProgress) return
             manifestInstallInProgress = true
@@ -407,7 +408,7 @@ fun ContainerConfigDialog(
                     )
                     if (result.success) {
                         refreshInstalledLists()
-                        onInstalled()
+                        onInstalled(result)
                     }
                     SnackbarManager.show(result.message)
                 } finally {
@@ -428,16 +429,16 @@ fun ContainerConfigDialog(
             label = entry.id,
             isDriver = false,
             expectedType = expectedType,
-            onInstalled = onInstalled,
+            onInstalled = { onInstalled() },
         )
 
-        fun launchManifestDriverInstall(entry: ManifestEntry, onInstalled: () -> Unit) =
+        fun launchManifestDriverInstall(entry: ManifestEntry, onInstalled: (String) -> Unit) =
             launchManifestInstall(
                 entry = entry,
                 label = entry.id,
                 isDriver = true,
                 expectedType = null,
-                onInstalled = onInstalled,
+                onInstalled = { result -> onInstalled(result.installedId ?: entry.id) },
             )
 
         fun launchSteamAppDownload(appId: Int, label: String, onDownloaded: () -> Unit) {

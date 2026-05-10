@@ -4803,7 +4803,7 @@ private fun extractGraphicsDriverFiles(
             }
         }
 
-        if (adrenoToolsDriverId !== "System") {
+        if (adrenoToolsDriverId != "System") {
             val adrenotoolsManager: AdrenotoolsManager = AdrenotoolsManager(context)
             adrenotoolsManager.setDriverById(envVars, imageFs, adrenoToolsDriverId)
         }

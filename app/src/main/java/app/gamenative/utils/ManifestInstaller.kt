@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit
 data class ManifestInstallResult(
     val success: Boolean,
     val message: String,
+    val installedId: String? = null,
 )
 
 object ManifestInstaller {
@@ -40,6 +41,7 @@ object ManifestInstaller {
             return@withContext ManifestInstallResult(
                 success = true,
                 message = context.getString(R.string.manifest_install_success, entry.name),
+                installedId = name,
             )
         } catch (e: Exception) {
             Timber.e(e, "ManifestInstaller: driver install failed")

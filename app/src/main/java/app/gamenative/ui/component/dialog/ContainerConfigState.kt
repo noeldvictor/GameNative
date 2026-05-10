@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import app.gamenative.utils.ContainerUtils
 import app.gamenative.utils.ManifestComponentHelper
 import app.gamenative.utils.ManifestEntry
+import app.gamenative.utils.ManifestInstallResult
 import com.winlator.box86_64.Box86_64Preset
 import com.winlator.contents.ContentProfile
 import com.winlator.container.ContainerData
@@ -125,9 +126,9 @@ class ContainerConfigState(
     val isBionicVariant: Boolean,
     val nonDeletableDriveLetters: Set<String>,
     val availableDriveLetters: List<String>,
-    val launchManifestInstall: (ManifestEntry, String, Boolean, ContentProfile.ContentType?, () -> Unit) -> Unit,
+    val launchManifestInstall: (ManifestEntry, String, Boolean, ContentProfile.ContentType?, (ManifestInstallResult) -> Unit) -> Unit,
     val launchManifestContentInstall: (ManifestEntry, ContentProfile.ContentType, () -> Unit) -> Unit,
-    val launchManifestDriverInstall: (ManifestEntry, () -> Unit) -> Unit,
+    val launchManifestDriverInstall: (ManifestEntry, (String) -> Unit) -> Unit,
     val launchSteamAppDownload: (Int, String, () -> Unit) -> Unit,
     val getStartupSelectionOptions: () -> List<String>,
     val launchFolderPicker: () -> Unit,

@@ -164,6 +164,69 @@ object ManifestComponentHelper {
         )
     }
 
+    fun isTurnipDriverId(value: String): Boolean {
+        val normalized = value.lowercase(Locale.ENGLISH)
+        return normalized.contains("turnip") ||
+            normalized.contains("gen8") ||
+            normalized.contains("a8xx")
+    }
+
+    fun isTurnipDriverEntry(entry: ManifestEntry): Boolean {
+        val searchable = listOf(entry.id, entry.name, entry.url)
+            .joinToString(" ")
+            .lowercase(Locale.ENGLISH)
+        val isBionic = entry.variant?.equals("bionic", ignoreCase = true) != false
+        return isBionic && isTurnipDriverId(searchable)
+    }
+
+    fun buildTurnipDriverOptionList(
+        base: List<String> = emptyList(),
+        installed: List<String>,
+        manifest: List<ManifestEntry>,
+    ): VersionOptionList {
+        val options = LinkedHashMap<String, VersionOption>()
+        options["System"] = VersionOption("System driver", "System", isManifest = false, isInstalled = true)
+
+        base
+            .filter { isTurnipDriverId(it) }
+            .forEach { id ->
+                options[id] = VersionOption(id, id, isManifest = false, isInstalled = true)
+            }
+
+        installed
+            .filter { isTurnipDriverId(it) }
+            .forEach { id ->
+                options[id] = VersionOption(id, id, isManifest = false, isInstalled = true)
+            }
+
+        manifest
+            .filter { isTurnipDriverEntry(it) }
+            .forEach { entry ->
+                val installedId = installed.firstOrNull { installedId ->
+                    installedId.equals(entry.id, ignoreCase = true) ||
+                        installedId.equals(entry.name, ignoreCase = true)
+                }
+                val optionId = installedId ?: entry.id
+                val installedAlready = installedId != null
+                val labelBase = entry.id.ifBlank { entry.name }
+                val label = if (installedAlready) labelBase else "$labelBase (download)"
+
+                options[optionId] = VersionOption(
+                    label = label,
+                    id = optionId,
+                    isManifest = !installedAlready,
+                    isInstalled = installedAlready,
+                )
+            }
+
+        val values = options.values.toList()
+        return VersionOptionList(
+            labels = values.map { it.label },
+            ids = values.map { it.id },
+            muted = values.map { it.isManifest && !it.isInstalled },
+        )
+    }
+
     data class DxvkContext(
         val isVortekLike: Boolean,
         val labels: List<String>,

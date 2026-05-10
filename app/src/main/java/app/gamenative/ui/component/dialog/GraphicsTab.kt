@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.gamenative.R
+import app.gamenative.utils.ManifestComponentHelper
+import app.gamenative.utils.ManifestContentTypes
 import app.gamenative.ui.component.settings.SettingsListDropdown
 import app.gamenative.ui.component.settings.SettingsMultiListDropdown
 import app.gamenative.ui.theme.settingsTileColors
@@ -56,10 +58,11 @@ fun GraphicsTabContent(state: ContainerConfigState) {
                     val isManifestNotInstalled = state.wrapperOptions.muted.getOrNull(idx) == true
                     val manifestEntry = state.wrapperManifestById[selectedId]
                     if (isManifestNotInstalled && manifestEntry != null) {
-                        state.launchManifestDriverInstall(manifestEntry) {
-                            val cfg = KeyValueSet(config.graphicsDriverConfig)
-                            cfg.put("version", state.wrapperOptions.labels[idx])
-                            state.config.value = config.copy(graphicsDriverConfig = cfg.toString())
+                        state.launchManifestDriverInstall(manifestEntry) { installedId ->
+                            val latestConfig = state.config.value
+                            val cfg = KeyValueSet(latestConfig.graphicsDriverConfig)
+                            cfg.put("version", installedId.ifEmpty { selectedId })
+                            state.config.value = latestConfig.copy(graphicsDriverConfig = cfg.toString())
                         }
                         return@SettingsListDropdown
                     }
@@ -125,6 +128,60 @@ fun GraphicsTabContent(state: ContainerConfigState) {
                     state.config.value = config.copy(graphicsDriverConfig = cfg.toString())
                 },
             )
+            run {
+                val installedDrivers = state.componentAvailability.value?.installedDrivers.orEmpty()
+                val manifestDrivers = state.componentAvailability.value
+                    ?.manifest
+                    ?.items
+                    ?.get(ManifestContentTypes.DRIVER)
+                    .orEmpty()
+                val turnipOptions = ManifestComponentHelper.buildTurnipDriverOptionList(
+                    base = state.baseWrapperVersions,
+                    installed = installedDrivers,
+                    manifest = manifestDrivers,
+                )
+                val turnipManifestById = manifestDrivers
+                    .filter { ManifestComponentHelper.isTurnipDriverEntry(it) }
+                    .associateBy { it.id }
+                val currentCustomDriver = KeyValueSet(config.graphicsDriverConfig)
+                    .get("version", "System")
+                    .ifEmpty { "System" }
+                val currentTurnipDriverIndex = turnipOptions.ids.indexOfFirst {
+                    it.equals(currentCustomDriver, ignoreCase = true)
+                }
+
+                SettingsListDropdown(
+                    colors = settingsTileColors(),
+                    title = { Text(text = stringResource(R.string.custom_turnip_driver)) },
+                    subtitle = { Text(text = stringResource(R.string.custom_turnip_driver_subtitle)) },
+                    value = currentTurnipDriverIndex,
+                    items = turnipOptions.labels,
+                    itemMuted = turnipOptions.muted,
+                    fallbackDisplay = currentCustomDriver,
+                    onItemSelected = { idx ->
+                        val selectedId = turnipOptions.ids.getOrNull(idx).orEmpty()
+                        val isManifestNotInstalled = turnipOptions.muted.getOrNull(idx) == true
+                        val manifestEntry = turnipManifestById[selectedId]
+                        if (isManifestNotInstalled && manifestEntry != null) {
+                            state.launchManifestDriverInstall(manifestEntry) { installedId ->
+                                val latestConfig = state.config.value
+                                val cfg = KeyValueSet(latestConfig.graphicsDriverConfig)
+                                cfg.put("version", installedId.ifEmpty { selectedId })
+                                cfg.put("adrenotoolsTurnip", "1")
+                                state.adrenotoolsTurnipChecked.value = true
+                                state.config.value = latestConfig.copy(graphicsDriverConfig = cfg.toString())
+                            }
+                            return@SettingsListDropdown
+                        }
+
+                        state.adrenotoolsTurnipChecked.value = !selectedId.equals("System", ignoreCase = true)
+                        val cfg = KeyValueSet(config.graphicsDriverConfig)
+                        cfg.put("version", selectedId.ifEmpty { "System" })
+                        cfg.put("adrenotoolsTurnip", if (state.adrenotoolsTurnipChecked.value) "1" else "0")
+                        state.config.value = config.copy(graphicsDriverConfig = cfg.toString())
+                    },
+                )
+            }
             SettingsListDropdown(
                 colors = settingsTileColors(),
                 title = { Text(text = stringResource(R.string.present_modes)) },
