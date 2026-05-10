@@ -615,7 +615,6 @@
 
     <!-- Profile & Menu -->
 	<string name="help_and_support">Ajutor &amp; Suport</string>
-	<string name="hall_of_fame">Hall of Fame</string>
 	<string name="go_online">Mergi online</string>
 	<string name="go_offline">Mergi offline</string>
 	<string name="log_out">Deconectare</string>
@@ -918,18 +917,12 @@
 
 	<!-- Settings: Info Group -->
 	<string name="settings_info_title">Informații</string>
-	<string name="settings_info_send_tip_title">Trimite un tip</string>
-	<string name="settings_info_send_tip_subtitle">Contribuie la dezvoltarea continuă</string>
-	<string name="settings_info_ask_tip_title">Cere tip la pornire</string>
-	<string name="settings_info_ask_tip_subtitle">Oprește afișarea mesajului de tip</string>
 	<string name="settings_info_source_title">Cod sursă</string>
 	<string name="settings_info_source_subtitle">Vezi codul sursă al acestui proiect</string>
 	<string name="settings_info_libraries_title">Biblioteci utilizate</string>
 	<string name="settings_info_libraries_subtitle">Vezi tehnologiile care fac GameNative posibil</string>
 	<string name="settings_info_privacy_title">Politica de confidențialitate</string>
 	<string name="settings_info_privacy_subtitle">Deschide linkul către politica de confidențialitate GameNative</string>
-	<string name="settings_info_usage_analytics_title">Analiză utilizare</string>
-	<string name="settings_info_usage_analytics_subtitle">Nu urmărim niciodată informații personale. Dezactivarea oprește analizele neesențiale, însă datele de bază privind performanța jocurilor sunt în continuare colectate ca interes legitim pentru a îmbunătăți compatibilitatea.</string>
 
 	<!-- Settings: Interface Group -->
 	<string name="settings_interface_title">Interfață</string>
@@ -1032,14 +1025,6 @@
 	<!-- PluviaMain: Crash & Support -->
 	<string name="main_recent_crash_title">Crash recent</string>
 	<string name="main_recent_crash_message">Ne pare rău!\nAr fi util să știm ce problemă ai întâmpinat.\nPoți vizualiza și exporta cel mai recent crash log din setările aplicației și îl poți atașa ca issue pe Github în repository-ul proiectului.\nLinkul către repo este tot în setări!</string>
-	<string name="main_thank_you_title">Mulțumim că folosești GameNative!</string>
-	<string name="main_thank_you_message">Susține gaming-ul open‑source pe Android distribuind aplicația prietenilor sau devenind membru pe Ko‑fi.</string>
-	<string name="main_join_kofi">Alătură-te pe Ko‑fi</string>
-	<string name="main_share">Distribuie</string>
-	<string name="main_share_text">Descoperă GameNative - joacă jocurile tale Steam pe PC pe Android, cu suport complet pentru salvări în cloud!\nhttps://gamenative.app\nAlătură-te comunității: https://discord.gg/2hKv4VfZfE</string>
-	<string name="main_discord_support_title">A funcționat jocul?</string>
-	<string name="main_discord_support_message">Alătură-te serverului de Discord pentru suport și optimizare.</string>
-	<string name="main_open_discord">Deschide Discord</string>
 
 	<!-- PluviaMain: Game Launch -->
 	<string name="main_downloading_steam">Se descarcă Steam...</string>
@@ -1100,16 +1085,6 @@
 	<string name="libraries_title">Biblioteci utilizate</string>
 	<string name="libraries_message">Pluvia - github.com/oxters168/Pluvia\nJavaSteam - github.com/Longi94/JavaSteam\nWinlator &amp; Vortek - github.com/brunodev85/winlator\nWinlator Cmod - github.com/coffincolors/winlator\nWrapper - https://github.com/leegao/bionic-vulkan-wrapper &amp; https://github.com/pipetto-crypto/\nUbuntu RootFs - releases.ubuntu.com/focal</string>
 
-	<!-- Supporters Dialog -->
-	<string name="supporters_art_credits">Credite artă</string>
-	<string name="supporters_app_icon">Icon aplicație: Hachi</string>
-	<string name="supporters_alt_icon">Icon alternativ: rhapsody_mdr</string>
-	<string name="supporters_loading">Se încarcă susținătorii…</string>
-	<string name="supporters_error">Nu s-au putut încărca susținătorii</string>
-	<string name="supporters_members">Membri</string>
-	<string name="supporters_supporters">Susținători</string>
-	<string name="supporters_none">Niciun susținător încă.</string>
-	<string name="supporters_anonymous">Anonim</string>
 
 	<!-- Chat Screen -->
 	<string name="chat_preview_warning">Funcția de chat este încă într-un stadiu incipient.\nTe rugăm să raportezi orice problemă în repo-ul proiectului.</string>
@@ -1409,20 +1384,12 @@
     <string name="workshop_failed_count">%1$d mod(uri) Workshop nu au putut fi actualizate</string>
     <string name="workshop_download_failed">Descărcarea a eșuat</string>
 
-    <!-- Recommendations -->
-    <string name="recommended_badge">Recomandat</string>
-    <string name="recommended_buy_button">Vezi jocul</string>
-    <string name="recommended_support_message">Cumpărarea prin acest link ajută la susținerea dezvoltării GameNative.</string>
-    <string name="recommended_about_heading">Despre acest joc</string>
-    <string name="recommended_review_count">Pe baza a %1$s recenzii</string>
     <string name="review_overwhelmingly_positive">Copleșitor de pozitiv</string>
     <string name="review_very_positive">Foarte pozitiv</string>
     <string name="review_mostly_positive">Majoritar pozitiv</string>
     <string name="review_mixed">Mixt</string>
     <string name="review_mostly_negative">Majoritar negativ</string>
     <string name="review_overwhelmingly_negative">Copleșitor de negativ</string>
-    <string name="settings_interface_show_recommendations_title">Afișează recomandări de jocuri</string>
-    <string name="settings_interface_show_recommendations_subtitle">Afișează jocuri indie selectate în biblioteca ta. Păstrând această opțiune activată, sprijini dezvoltatorii indie și GameNative.</string>
      <string name="steam_save_export_success">Salvari exportate</string>
      <string name="steam_save_export_no_saves_found">Nu s-au găsit fișiere de salvare</string>
      <string name="steam_save_export_failed">Exportul salvărilor a eșuat: %s</string>

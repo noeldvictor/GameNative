@@ -607,7 +607,6 @@
 
     <!-- Profile & Menu -->
     <string name="help_and_support">幫助 &amp; 支援</string>
-    <string name="hall_of_fame">名人堂</string>
     <string name="go_online">進入在線模式</string>
     <string name="go_offline">進入離線模式</string>
     <string name="log_out">登出</string>
@@ -912,18 +911,12 @@
 
     <!-- Settings: Info Group -->
     <string name="settings_info_title">資訊</string>
-    <string name="settings_info_send_tip_title">捐款支持</string>
-    <string name="settings_info_send_tip_subtitle">為持續的應用程式開發貢獻力量</string>
-    <string name="settings_info_ask_tip_title">啟動時顯示捐款訊息</string>
-    <string name="settings_info_ask_tip_subtitle">停止顯示捐款訊息</string>
     <string name="settings_info_source_title">原始碼</string>
     <string name="settings_info_source_subtitle">檢視此專案的原始碼</string>
     <string name="settings_info_libraries_title">使用的函式庫</string>
     <string name="settings_info_libraries_subtitle">了解哪些技術讓GameNative成為可能</string>
     <string name="settings_info_privacy_title">隱私權政策</string>
     <string name="settings_info_privacy_subtitle">開啟連結至 GameNative 的隱私權政策</string>
-    <string name="settings_info_usage_analytics_title">使用分析</string>
-    <string name="settings_info_usage_analytics_subtitle">我們絕不追蹤個人資訊。關閉此選項將停止非必要的分析，但核心遊戲效能資料仍會作為合法權益繼續收集，以改善相容性。</string>
 
     <!-- Settings: Interface Group -->
     <string name="settings_interface_title">介面</string>
@@ -1026,14 +1019,6 @@
     <!-- PluviaMain: Crash & Support -->
     <string name="main_recent_crash_title">最近應用程式當機</string>
     <string name="main_recent_crash_message">若能了解您最近遇到的問題, 將有助於我們改善應用程式.\n您可在應用程式設定中檢視並匯出最近的崩潰日誌, 將其附加至專案原始碼儲存庫的 Github Issue中\nGithub 原始碼儲存庫的連結亦位於設定頁面內</string>
-    <string name="main_thank_you_title">感謝您使用GameNative!</string>
-    <string name="main_thank_you_message">透過與朋友分享應用程式或在Ko-fi成為會員，支持Android平台的開源PC遊戲</string>
-    <string name="main_join_kofi">加入Ko-fi</string>
-    <string name="main_share">分享</string>
-    <string name="main_share_text">試試 GameNative - 在 Android 上暢玩您的 PC Steam 遊戲，完整支援雲端存檔！\nhttps://gamenative.app\n加入社群：https://discord.gg/2hKv4VfZfE</string>
-    <string name="main_discord_support_title">遊戲運作正常嗎?</string>
-    <string name="main_discord_support_message">加入 Discord 社群, 獲取遊戲修復與效能優化的支援</string>
-    <string name="main_open_discord">開啟 Discord</string>
 
     <!-- PluviaMain: Game Launch -->
     <string name="main_downloading_steam">正在下載 Steam...</string>
@@ -1094,16 +1079,6 @@
     <string name="libraries_title">使用的函式庫</string>
     <string name="libraries_message">Pluvia - github.com/oxters168/Pluvia\nJavaSteam - github.com/Longi94/JavaSteam\nWinlator &amp; Vortek - github.com/brunodev85/winlator\nWinlator Cmod - github.com/coffincolors/winlator\nWrapper - https://github.com/leegao/bionic-vulkan-wrapper &amp; https://github.com/pipetto-crypto/\nUbuntu RootFs - releases.ubuntu.com/focal</string>
 
-    <!-- Supporters Dialog -->
-    <string name="supporters_art_credits">Art Credits</string>
-    <string name="supporters_app_icon">App Icon: Hachi</string>
-    <string name="supporters_alt_icon">Alternate App Icon: rhapsody_mdr</string>
-    <string name="supporters_loading">正在載入支持者…</string>
-    <string name="supporters_error">無法載入支持者</string>
-    <string name="supporters_members">會員</string>
-    <string name="supporters_supporters">Supporters</string>
-    <string name="supporters_none">No supporters yet.</string>
-    <string name="supporters_anonymous">Anonymous</string>
 
     <!-- Chat Screen -->
     <string name="chat_preview_warning">聊天功能仍處於早期階段, 請將任何問題回報至專案儲存庫</string>
@@ -1402,20 +1377,12 @@
     <string name="workshop_failed_count">%1$d 個創意工坊模組更新失敗</string>
     <string name="workshop_download_failed">下載失敗</string>
 
-    <!-- Recommendations -->
-    <string name="recommended_badge">推薦</string>
-    <string name="recommended_buy_button">查看遊戲</string>
-    <string name="recommended_support_message">透過此連結購買有助於支持 GameNative 的開發。</string>
-    <string name="recommended_about_heading">關於本遊戲</string>
-    <string name="recommended_review_count">基於 %1$s 則評價</string>
     <string name="review_overwhelmingly_positive">壓倒性好評</string>
     <string name="review_very_positive">極度好評</string>
     <string name="review_mostly_positive">大多好評</string>
     <string name="review_mixed">褒貶不一</string>
     <string name="review_mostly_negative">大多負評</string>
     <string name="review_overwhelmingly_negative">壓倒性負評</string>
-    <string name="settings_interface_show_recommendations_title">顯示遊戲推薦</string>
-    <string name="settings_interface_show_recommendations_subtitle">在遊戲庫中顯示精選獨立遊戲。保持開啟有助於支持獨立開發者和 GameNative。</string>
      <string name="steam_save_export_success">存檔已匯出</string>
      <string name="steam_save_export_no_saves_found">未找到存檔檔案</string>
      <string name="steam_save_export_failed">匯出存檔失敗：%s</string>

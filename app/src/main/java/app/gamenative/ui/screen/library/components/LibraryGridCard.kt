@@ -151,10 +151,6 @@ internal fun GridViewCard(
             ),
             border = when {
                 isFocused -> BorderStroke(2.dp, focusBorderBrush)
-                appInfo.isRecommended -> BorderStroke(
-                    1.dp,
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
-                )
                 else -> null
             },
         ) {
@@ -276,13 +272,8 @@ internal fun GridViewCard(
                     GridStatusIcons(appInfo = appInfo)
                 }
 
-                // Compatibility / Recommended badge (top left)
-                val badgeStatus = if (appInfo.isRecommended) {
-                    GameCompatibilityStatus.RECOMMENDED
-                } else {
-                    compatibilityStatus
-                }
-                badgeStatus?.let { status ->
+                // Compatibility badge (top left)
+                compatibilityStatus?.let { status ->
                     CompatibilityBadge(
                         status = status,
                         showLabel = true,
@@ -292,15 +283,13 @@ internal fun GridViewCard(
                     )
                 }
 
-                if (!appInfo.isRecommended) {
-                    GameSourceIcon(
-                        gameSource = appInfo.gameSource,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(top = topIconPadding, end = topIconPadding),
-                        iconSize = if (isCapsule) 14 else 12,
-                    )
-                }
+                GameSourceIcon(
+                    gameSource = appInfo.gameSource,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = topIconPadding, end = topIconPadding),
+                    iconSize = if (isCapsule) 14 else 12,
+                )
             }
         }
     }

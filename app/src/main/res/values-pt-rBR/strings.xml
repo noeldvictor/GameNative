@@ -452,7 +452,6 @@
 
     <!-- Profile & Menu -->
     <string name="help_and_support">Ajuda e Suporte</string>
-    <string name="hall_of_fame">Hall da Fama</string>
     <string name="go_online">Ir online</string>
     <string name="go_offline">Ir offline</string>
     <string name="log_out">Sair</string>
@@ -737,18 +736,12 @@
 
     <!-- Settings: Info Group -->
     <string name="settings_info_title">Informações</string>
-    <string name="settings_info_send_tip_title">Enviar gorjeta</string>
-    <string name="settings_info_send_tip_subtitle">Contribuir para o desenvolvimento contínuo</string>
-    <string name="settings_info_ask_tip_title">Pedir gorjeta na inicialização</string>
-    <string name="settings_info_ask_tip_subtitle">Impede que a mensagem de gorjeta apareça</string>
     <string name="settings_info_source_title">Código-fonte</string>
     <string name="settings_info_source_subtitle">Ver o código-fonte deste projeto</string>
     <string name="settings_info_libraries_title">Bibliotecas utilizadas</string>
     <string name="settings_info_libraries_subtitle">Veja quais tecnologias tornam o GameNative possível</string>
     <string name="settings_info_privacy_title">Política de privacidade</string>
     <string name="settings_info_privacy_subtitle">Abre um link para a política de privacidade do GameNative</string>
-    <string name="settings_info_usage_analytics_title">Análise de uso</string>
-    <string name="settings_info_usage_analytics_subtitle">Nunca rastreamos informações pessoais. Desativar isso interrompe análises não essenciais, porém dados de desempenho de jogos ainda são coletados como interesse legítimo para melhorar a compatibilidade.</string>
 
     <!-- Settings: Interface Group -->
     <string name="settings_interface_title">Interface</string>
@@ -854,14 +847,6 @@
     <!-- TODO: Revisão manual - PluviaMain: Falha e suporte -->
     <string name="main_recent_crash_title">Falha recente</string>
     <string name="main_recent_crash_message">Desculpe por isso!\nSeria bom saber sobre o problema recente que você teve.\nVocê pode visualizar e exportar o log de falha mais recente nas configurações do aplicativo e anexá-lo como um problema do Github no repositório do projeto.\nO link para o repositório do Github também está nas configurações!</string>
-    <string name="main_thank_you_title">Obrigado por usar o GameNative!</string>
-    <string name="main_thank_you_message">Apoie jogos de PC de código aberto no Android compartilhando o aplicativo com seus amigos ou se tornando um membro no Ko-fi.</string>
-    <string name="main_join_kofi">Junte-se no Ko-fi</string>
-    <string name="main_share">Compartilhar</string>
-    <string name="main_share_text">Confira o GameNative - jogue seus jogos Steam de PC no Android, com suporte completo a salvamentos na nuvem!\nhttps://gamenative.app\nJunte-se à comunidade: https://discord.gg/2hKv4VfZfE</string>
-    <string name="main_discord_support_title">O jogo funcionou?</string>
-    <string name="main_discord_support_message">Junte-se ao Discord para obter suporte para corrigir seu jogo ou melhorar o desempenho.</string>
-    <string name="main_open_discord">Abrir Discord</string>
 
     <!-- TODO: Revisão manual - PluviaMain: Inicialização do jogo -->
     <string name="main_downloading_steam">Baixando Steam...</string>
@@ -923,15 +908,6 @@
     <string name="libraries_message">Pluvia - github.com/oxters168/Pluvia\nJavaSteam - github.com/Longi94/JavaSteam\nWinlator &amp; Vortek - github.com/brunodev85/winlator\nWinlator Cmod - github.com/coffincolors/winlator\nWrapper - https://github.com/leegao/bionic-vulkan-wrapper &amp; https://github.com/pipetto-crypto/\nUbuntu RootFs - releases.ubuntu.com/focal</string>
 
     <!-- TODO: Revisão manual - Diálogo de apoiadores -->
-    <string name="supporters_art_credits">Créditos de arte</string>
-    <string name="supporters_app_icon">Ícone do app: Hachi</string>
-    <string name="supporters_alt_icon">Ícone alternativo do app: rhapsody_mdr</string>
-    <string name="supporters_loading">Carregando apoiadores...</string>
-    <string name="supporters_error">Não foi possível carregar os apoiadores</string>
-    <string name="supporters_members">Membros</string>
-    <string name="supporters_supporters">Apoiadores</string>
-    <string name="supporters_none">Ainda não há apoiadores.</string>
-    <string name="supporters_anonymous">Anônimo</string>
 
     <!-- TODO: Revisão manual - Tela de chat -->
     <string name="chat_preview_warning">O chat ainda é um recurso em estágio inicial.\nPor favor, relate quaisquer problemas no repositório do projeto.</string>
@@ -1274,20 +1250,12 @@
     <string name="workshop_failed_count">%1$d mod(s) da Oficina não puderam ser atualizados</string>
     <string name="workshop_download_failed">Falha no download</string>
 
-    <!-- Recommendations -->
-    <string name="recommended_badge">Recomendado</string>
-    <string name="recommended_buy_button">Conferir jogo</string>
-    <string name="recommended_support_message">Comprar através deste link ajuda a apoiar o desenvolvimento do GameNative.</string>
-    <string name="recommended_about_heading">Sobre este jogo</string>
-    <string name="recommended_review_count">Baseado em %1$s avaliações</string>
     <string name="review_overwhelmingly_positive">Extremamente positivo</string>
     <string name="review_very_positive">Muito positivo</string>
     <string name="review_mostly_positive">Majoritariamente positivo</string>
     <string name="review_mixed">Misto</string>
     <string name="review_mostly_negative">Majoritariamente negativo</string>
     <string name="review_overwhelmingly_negative">Extremamente negativo</string>
-    <string name="settings_interface_show_recommendations_title">Mostrar recomendações de jogos</string>
-    <string name="settings_interface_show_recommendations_subtitle">Mostra jogos indie selecionados na sua biblioteca. Manter ativado ajuda a apoiar desenvolvedores indie e o GameNative.</string>
      <string name="steam_save_export_success">Saves exportados</string>
      <string name="steam_save_export_no_saves_found">Nenhum save encontrado</string>
      <string name="steam_save_export_failed">Falha ao exportar saves: %s</string>

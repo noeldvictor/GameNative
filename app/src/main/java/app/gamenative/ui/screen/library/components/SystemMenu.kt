@@ -40,7 +40,6 @@ import androidx.compose.material.icons.automirrored.filled.AirplaneTicket
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.automirrored.filled.StarHalf
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Download
@@ -82,7 +81,6 @@ import app.gamenative.R
 import app.gamenative.data.SteamFriend
 import app.gamenative.events.SteamEvent
 import app.gamenative.service.SteamService
-import app.gamenative.ui.component.dialog.SupportersDialog
 import app.gamenative.ui.screen.PluviaScreen
 import app.gamenative.ui.theme.PluviaTheme
 import app.gamenative.ui.util.SteamIconImage
@@ -266,7 +264,6 @@ fun SystemMenu(
 
     var persona by remember { mutableStateOf<SteamFriend?>(null) }
     var selectedStatus by remember(persona) { mutableStateOf(persona?.state ?: EPersonaState.Online) }
-    var showSupporters by remember { mutableStateOf(false) }
     var showStatusPicker by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -296,8 +293,6 @@ fun SystemMenu(
     BackHandler(enabled = isOpen && !showStatusPicker) {
         onDismiss()
     }
-
-    SupportersDialog(visible = showSupporters, onDismiss = { showSupporters = false })
 
     val colorOnline = PluviaTheme.colors.statusInstalled
     val colorAway = PluviaTheme.colors.statusAway
@@ -588,12 +583,6 @@ fun SystemMenu(
                             onClick = {
                                 uriHandler.openUri("https://discord.gg/2hKv4VfZfE")
                             },
-                        )
-
-                        SystemMenuItem(
-                            text = stringResource(R.string.hall_of_fame),
-                            icon = Icons.AutoMirrored.Filled.StarHalf,
-                            onClick = { showSupporters = true },
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))

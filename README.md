@@ -82,9 +82,11 @@ Use this only with games you legally own. This repository does not include comme
 
 Offline helper and cheat-overlay work is limited to personal, legally owned, offline single-player use. Do not use this project for online cheating, multiplayer cheating, anti-cheat bypasses, DRM bypasses, account abuse, or piracy.
 
-## Analytics And Privacy
+## Privacy
 
-This fork inherits GameNative behavior unless changed in source. Review the in-app settings and [Privacy Policy](PrivacyPolicy/README.md) before sharing builds.
+GameThor removes the upstream analytics hooks, ad/support prompts, affiliate-style recommendation data, and the built-in recommendation feed. There is no PostHog dependency, no in-app ad surface, and no opt-in usage analytics setting in this fork.
+
+Review the [Privacy Policy](PrivacyPolicy/README.md) before sharing builds.
 
 ## Upstream Credit
 

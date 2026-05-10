@@ -605,7 +605,6 @@
 
     <!-- 个人资料与菜单 -->
     <string name="help_and_support">帮助与支持</string>
-    <string name="hall_of_fame">名人堂</string>
     <string name="go_online">进入在线模式</string>
     <string name="go_offline">进入离线模式</string>
     <string name="log_out">登出</string>
@@ -910,18 +909,12 @@
 
     <!-- 设置：信息组 -->
     <string name="settings_info_title">信息</string>
-    <string name="settings_info_send_tip_title">捐款支持</string>
-    <string name="settings_info_send_tip_subtitle">为持续的应用程序开发贡献力量</string>
-    <string name="settings_info_ask_tip_title">启动时显示捐款信息</string>
-    <string name="settings_info_ask_tip_subtitle">停止显示捐款信息</string>
     <string name="settings_info_source_title">源代码</string>
     <string name="settings_info_source_subtitle">查看此项目的源代码</string>
     <string name="settings_info_libraries_title">使用的库</string>
     <string name="settings_info_libraries_subtitle">了解哪些技术让 GameNative 成为可能</string>
     <string name="settings_info_privacy_title">隐私政策</string>
     <string name="settings_info_privacy_subtitle">打开链接至 GameNative 的隐私政策</string>
-    <string name="settings_info_usage_analytics_title">使用分析</string>
-    <string name="settings_info_usage_analytics_subtitle">我们绝不追踪个人信息。关闭此选项将停止非必要的分析，但核心游戏性能数据仍会作为合法权益继续收集，以改善兼容性。</string>
 
     <!-- 设置：界面组 -->
     <string name="settings_interface_title">界面</string>
@@ -1023,14 +1016,6 @@
     <!-- 主界面：崩溃与支持 -->
     <string name="main_recent_crash_title">最近应用程序崩溃</string>
     <string name="main_recent_crash_message">若能了解您最近遇到的问题，将有助于我们改善应用程序。\n您可在应用程序设置中查看并导出最近的崩溃日志，将其附加至项目源代码仓库的 Github Issue中\nGithub 源代码仓库的链接亦位于设置页面内</string>
-    <string name="main_thank_you_title">感谢您使用 GameNative！</string>
-    <string name="main_thank_you_message">通过与朋友分享应用程序或在 Ko-fi 成为会员，支持 Android 平台的开源 PC 游戏</string>
-    <string name="main_join_kofi">加入 Ko-fi</string>
-    <string name="main_share">分享</string>
-    <string name="main_share_text">试试 GameNative - 在 Android 上畅玩您的 PC Steam 游戏，完整支持云存档！\nhttps://gamenative.app\n加入社区：https://discord.gg/2hKv4VfZfE</string>
-    <string name="main_discord_support_title">游戏运行正常吗？</string>
-    <string name="main_discord_support_message">加入 Discord 社区，获取游戏修复与性能优化的支持</string>
-    <string name="main_open_discord">打开 Discord</string>
 
     <!-- 主界面：游戏启动 -->
     <string name="main_downloading_steam">正在下载 Steam...</string>
@@ -1092,15 +1077,6 @@
     <string name="libraries_message">Pluvia - github.com/oxters168/Pluvia\nJavaSteam - github.com/Longi94/JavaSteam\nWinlator &amp; Vortek - github.com/brunodev85/winlator\nWinlator Cmod - github.com/coffincolors/winlator\nWrapper - https://github.com/leegao/bionic-vulkan-wrapper &amp; https://github.com/pipetto-crypto/\nUbuntu RootFs - releases.ubuntu.com/focal</string>
 
     <!-- 支持者对话框 -->
-    <string name="supporters_art_credits">美术鸣谢</string>
-    <string name="supporters_app_icon">应用图标：Hachi</string>
-    <string name="supporters_alt_icon">备用应用图标：rhapsody_mdr</string>
-    <string name="supporters_loading">正在加载支持者…</string>
-    <string name="supporters_error">无法加载支持者</string>
-    <string name="supporters_members">会员</string>
-    <string name="supporters_supporters">支持者</string>
-    <string name="supporters_none">尚无支持者。</string>
-    <string name="supporters_anonymous">匿名</string>
 
     <!-- 聊天界面 -->
     <string name="chat_preview_warning">聊天功能仍处于早期阶段，请将任何问题报告至项目仓库</string>
@@ -1399,20 +1375,12 @@
     <string name="workshop_failed_count">%1$d 个创意工坊模组更新失败</string>
     <string name="workshop_download_failed">下载失败</string>
 
-    <!-- Recommendations -->
-    <string name="recommended_badge">推荐</string>
-    <string name="recommended_buy_button">查看游戏</string>
-    <string name="recommended_support_message">通过此链接购买有助于支持 GameNative 的开发。</string>
-    <string name="recommended_about_heading">关于本游戏</string>
-    <string name="recommended_review_count">基于 %1$s 条评价</string>
     <string name="review_overwhelmingly_positive">好评如潮</string>
     <string name="review_very_positive">特别好评</string>
     <string name="review_mostly_positive">多半好评</string>
     <string name="review_mixed">褒贬不一</string>
     <string name="review_mostly_negative">多半差评</string>
     <string name="review_overwhelmingly_negative">差评如潮</string>
-    <string name="settings_interface_show_recommendations_title">显示游戏推荐</string>
-    <string name="settings_interface_show_recommendations_subtitle">在游戏库中显示精选独立游戏。保持开启有助于支持独立开发者和 GameNative。</string>
      <string name="steam_save_export_success">存档已导出</string>
      <string name="steam_save_export_no_saves_found">未找到存档文件</string>
      <string name="steam_save_export_failed">导出存档失败：%s</string>

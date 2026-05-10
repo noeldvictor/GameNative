@@ -873,16 +873,6 @@ object PrefManager {
             setPref(ALLOWED_ORIENTATION, Orientation.toInt(value))
         }
 
-    private val TIPPED = booleanPreferencesKey("tipped")
-    var tipped: Boolean
-        get() {
-            val value = getPref(TIPPED, false)
-            return value
-        }
-        set(value) {
-            setPref(TIPPED, value)
-        }
-
     private val APP_THEME = intPreferencesKey("app_theme")
     var appTheme: AppTheme
         get() {
@@ -1056,14 +1046,6 @@ object PrefManager {
             setPref(AMAZON_INSTALLED_GAMES_COUNT, value)
         }
 
-    // Show game recommendations in library
-    private val SHOW_RECOMMENDATIONS = booleanPreferencesKey("show_recommendations")
-    var showRecommendations: Boolean
-        get() = getPref(SHOW_RECOMMENDATIONS, true)
-        set(value) {
-            setPref(SHOW_RECOMMENDATIONS, value)
-        }
-
     // Show dialog when adding custom game folder
     private val SHOW_ADD_CUSTOM_GAME_DIALOG = booleanPreferencesKey("show_add_custom_game_dialog")
     var showAddCustomGameDialog: Boolean
@@ -1213,8 +1195,4 @@ object PrefManager {
         get() = getPref(WARN_BEFORE_EXIT, false)
         set(value) { setPref(WARN_BEFORE_EXIT, value) }
 
-    private val USAGE_ANALYTICS_ENABLED = booleanPreferencesKey("usage_analytics_enabled")
-    var usageAnalyticsEnabled: Boolean
-        get() = getPref(USAGE_ANALYTICS_ENABLED, true)
-        set(value) { setPref(USAGE_ANALYTICS_ENABLED, value) }
 }

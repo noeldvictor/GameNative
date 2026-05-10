@@ -623,7 +623,6 @@
 
     <!-- Profile & Menu -->
     <string name="help_and_support">Pomoc i wsparcie</string>
-    <string name="hall_of_fame">Aleja Sław</string>
     <string name="go_online">Przejdź online</string>
     <string name="go_offline">Przejdź offline</string>
     <string name="log_out">Wyloguj</string>
@@ -926,18 +925,12 @@
 
     <!-- Settings: Info Group -->
     <string name="settings_info_title">Informacje</string>
-    <string name="settings_info_send_tip_title">Wyślij napiwek</string>
-    <string name="settings_info_send_tip_subtitle">Wesprzyj ciągły rozwój</string>
-    <string name="settings_info_ask_tip_title">Pytaj o napiwek przy uruchomieniu</string>
-    <string name="settings_info_ask_tip_subtitle">Zatrzymuje wyświetlanie wiadomości o napiwku</string>
     <string name="settings_info_source_title">Kod źródłowy</string>
     <string name="settings_info_source_subtitle">Zobacz kod źródłowy tego projektu</string>
     <string name="settings_info_libraries_title">Użyte biblioteki</string>
     <string name="settings_info_libraries_subtitle">Zobacz, jakie technologie umożliwiają działanie GameNative</string>
     <string name="settings_info_privacy_title">Polityka prywatności</string>
     <string name="settings_info_privacy_subtitle">Otwiera link do polityki prywatności GameNative</string>
-    <string name="settings_info_usage_analytics_title">Analityka użytkowania</string>
-    <string name="settings_info_usage_analytics_subtitle">Nigdy nie śledzimy danych osobowych. Wyłączenie tego zatrzymuje nieistotne analizy, jednak podstawowe dane o wydajności gier są nadal zbierane jako uzasadniony interes w celu poprawy kompatybilności.</string>
 
     <!-- Settings: Interface Group -->
     <string name="settings_interface_title">Interfejs</string>
@@ -1041,14 +1034,6 @@
     <!-- PluviaMain: Crash & Support -->
     <string name="main_recent_crash_title">Ostatnia awaria</string>
     <string name="main_recent_crash_message">Przykro nam!\nDobrze byłoby wiedzieć o ostatnim problemie, który wystąpił.\nMożesz zobaczyć i wyeksportować log ostatniej awarii w ustawieniach aplikacji i dołączyć go jako zgłoszenie w repozytorium projektu na Githubie.\nLink do repozytorium Github znajduje się również w ustawieniach!</string>
-    <string name="main_thank_you_title">Dziękujemy za korzystanie z GameNative!</string>
-    <string name="main_thank_you_message">Wspieraj otwarty gaming na PC na Androidzie, udostępniając aplikację znajomym lub zostając członkiem na Ko-fi.</string>
-    <string name="main_join_kofi">Dołącz na Ko-fi</string>
-    <string name="main_share">Udostępnij</string>
-    <string name="main_share_text">Sprawdź GameNative - graj w gry Steam z PC na Androidzie, z pełnym wsparciem zapisów w chmurze!\nhttps://gamenative.app\nDołącz do społeczności: https://discord.gg/2hKv4VfZfE</string>
-    <string name="main_discord_support_title">Czy gra zadziałała?</string>
-    <string name="main_discord_support_message">Dołącz do Discorda, aby uzyskać pomoc w naprawie gry lub poprawie wydajności.</string>
-    <string name="main_open_discord">Otwórz Discord</string>
 
     <!-- PluviaMain: Game Launch -->
     <string name="main_downloading_steam">Pobieranie Steam...</string>
@@ -1109,16 +1094,6 @@
     <string name="libraries_title">Użyte biblioteki</string>
     <string name="libraries_message">Pluvia - github.com/oxters168/Pluvia\nJavaSteam - github.com/Longi94/JavaSteam\nWinlator &amp; Vortek - github.com/brunodev85/winlator\nWinlator Cmod - github.com/coffincolors/winlator\nWrapper - https://github.com/leegao/bionic-vulkan-wrapper &amp; https://github.com/pipetto-crypto/\nUbuntu RootFs - releases.ubuntu.com/focal</string>
 
-    <!-- Supporters Dialog -->
-    <string name="supporters_art_credits">Twórcy grafiki</string>
-    <string name="supporters_app_icon">Ikona aplikacji: Hachi</string>
-    <string name="supporters_alt_icon">Alternatywna ikona: rhapsody_mdr</string>
-    <string name="supporters_loading">Ładowanie wspierających…</string>
-    <string name="supporters_error">Nie można załadować wspierających</string>
-    <string name="supporters_members">Członkowie</string>
-    <string name="supporters_supporters">Wspierający</string>
-    <string name="supporters_none">Brak wspierających.</string>
-    <string name="supporters_anonymous">Anonimowy</string>
 
     <!-- Chat Screen -->
     <string name="chat_preview_warning">Czat jest w wczesnej fazie rozwoju.\nZgłoś wszelkie problemy w repozytorium projektu.</string>
@@ -1407,20 +1382,12 @@
     <string name="workshop_failed_count">Nie udało się zaktualizować %1$d modów z Warsztatu</string>
     <string name="workshop_download_failed">Pobieranie nie powiodło się</string>
 
-    <!-- Recommendations -->
-    <string name="recommended_badge">Polecane</string>
-    <string name="recommended_buy_button">Zobacz grę</string>
-    <string name="recommended_support_message">Zakup przez ten link pomaga wspierać rozwój GameNative.</string>
-    <string name="recommended_about_heading">O tej grze</string>
-    <string name="recommended_review_count">Na podstawie %1$s recenzji</string>
     <string name="review_overwhelmingly_positive">Przytłaczająco pozytywne</string>
     <string name="review_very_positive">Bardzo pozytywne</string>
     <string name="review_mostly_positive">W większości pozytywne</string>
     <string name="review_mixed">Mieszane</string>
     <string name="review_mostly_negative">W większości negatywne</string>
     <string name="review_overwhelmingly_negative">Przytłaczająco negatywne</string>
-    <string name="settings_interface_show_recommendations_title">Pokaż rekomendacje gier</string>
-    <string name="settings_interface_show_recommendations_subtitle">Wyświetla wyselekcjonowane gry indie w twojej bibliotece. Pozostawienie tego włączonego wspiera niezależnych deweloperów i GameNative.</string>
      <string name="steam_save_export_success">Zapisy wyeksportowane</string>
      <string name="steam_save_export_no_saves_found">Nie znaleziono plików zapisów</string>
      <string name="steam_save_export_failed">Nie udało się wyeksportować zapisów: %s</string>

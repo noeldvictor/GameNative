@@ -101,10 +101,6 @@ internal fun ListViewCard(
                     ),
                 ),
             )
-            appInfo.isRecommended -> BorderStroke(
-                1.dp,
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
-            )
             else -> null
         },
     ) {
@@ -182,12 +178,7 @@ internal fun ListViewCard(
                 }
             }
 
-            val badgeStatus = if (appInfo.isRecommended) {
-                GameCompatibilityStatus.RECOMMENDED
-            } else {
-                compatibilityStatus
-            }
-            badgeStatus?.let { status ->
+            compatibilityStatus?.let { status ->
                 CompatibilityBadge(
                     status = status,
                     showLabel = true,
@@ -268,7 +259,6 @@ private fun InstallStatusBadge(
  * Gets the icon URL for a game in list view.
  */
 private fun getListIconUrl(context: Context, appInfo: LibraryItem): String {
-    if (appInfo.isRecommended) return appInfo.iconHash
     return if (appInfo.gameSource == GameSource.CUSTOM_GAME) {
         val path = CustomGameScanner.findIconFileForCustomGame(context, appInfo.appId)
         if (!path.isNullOrEmpty()) {

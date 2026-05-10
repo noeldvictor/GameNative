@@ -22,7 +22,6 @@ import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.automirrored.filled.ReplyAll
-import androidx.compose.material.icons.automirrored.filled.StarHalf
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Settings
@@ -80,7 +79,6 @@ fun ProfileDialog(
     }
 
     var selectedItem by remember(state) { mutableStateOf(state) }
-    var showSupporters by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
     AlertDialog(
@@ -162,12 +160,6 @@ fun ProfileDialog(
                                     Text(text = stringResource(R.string.help_and_support))
                                 }
 
-                                FilledTonalButton(modifier = Modifier.fillMaxWidth(), onClick = { showSupporters = true }) {
-                                    Icon(imageVector = Icons.AutoMirrored.Filled.StarHalf, contentDescription = null)
-                                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSize))
-                                    Text(text = stringResource(R.string.hall_of_fame))
-                                }
-
                                 if(isOffline) {
                                     FilledTonalButton(modifier = Modifier.fillMaxWidth(), onClick = onGoOnline) {
                                         Icon(imageVector = Icons.AutoMirrored.Filled.Login, contentDescription = null)
@@ -236,8 +228,6 @@ fun ProfileDialog(
             }
         },
     )
-
-    SupportersDialog(visible = showSupporters, onDismiss = { showSupporters = false })
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
