@@ -11,6 +11,17 @@ These notes are for work in GameThor, a vibecoded GameNative fork customized for
 - Commit GameThor source changes in this repo, not in the tools repo.
 - Do not commit APK builds, runtime imagefs archives, extracted runtimes, Gradle caches, Android SDKs, or game files.
 
+## Upstream Sync Policy
+
+- Fetch upstream with `git fetch upstream`, then compare `HEAD...upstream/master`. Do not merge or rebase upstream wholesale.
+- Prefer manual transplants or narrow cherry-picks so GameThor keeps its AYN Thor identity, README/banner, package decisions, and local handheld experiments.
+- Hard skip analytics, ads, recommendation, and support-prompt code. Do not reintroduce PostHog, analytics settings/events, recommendation feeds/APIs, ad surfaces, Ko-fi/supporter prompts, or affiliate-style discovery surfaces.
+- Keep DRM, anti-cheat, ownership, and entitlement behavior out of scope. Review Epic/Steam changes carefully and skip anything whose purpose is DRM support or bypass-adjacent behavior.
+- Good upstream candidates are renderer fixes, driver/component manifests, Turnip/VKD3D/FEX/WOW updates, depot/download correctness, custom-game visibility, LSFG/FPS limiter fixes, XServer/input stability, and device-specific flicker fixes.
+- After every upstream transplant, run a focused forbidden-code scan for `PostHog`, `analytics`, `recommendation`, `supporter`, `ko-fi`, `ads`, and related API names before committing.
+- Latest upstream audit, 2026-05-10: fetched `upstream/master` at `3554d6d7`. Took safe fixes from `14cc45d3`, `f0bbbafb`, `f959a0c0`, `6e63d36e`, `c44a22d2`, `0459d4ab`, `cd1670f1`, `2f169050`, plus the non-recommendation LSFG/Samsung flicker pieces from `3554d6d7`.
+- Latest upstream audit skipped `fb288219` recommendations API, `350984e2` Epic Denuvo support, README/version churn from `f8549337` and `7156f63e`, and old upstream history cleanup that does not apply cleanly to the Thor fork.
+
 ## Safety Scope
 
 - Work only on compatibility, controller UX, media playback, offline single-player helper support, diagnostics, and runtime packaging.
@@ -20,7 +31,7 @@ These notes are for work in GameThor, a vibecoded GameNative fork customized for
 
 ## Local Workflow
 
-- On this Windows workstation, use PowerShell commands. Prefer `Get-ChildItem`, `Get-Content`, and `Select-String`; do not use `rg`.
+- On this Windows workstation, use PowerShell commands. Prefer `rg` for repo search when available; `Get-ChildItem`, `Get-Content`, and `Select-String` are fine for PowerShell-native file reads.
 - Before editing, check `git status --short --branch`.
 - Keep changes small and reversible. If a patch is speculative, gate it behind explicit runtime detection and log clearly.
 - Prefer app logs and `logcat` proof over guessing. Record exact env vars and loaded library/plugin names when debugging GameNative launches.

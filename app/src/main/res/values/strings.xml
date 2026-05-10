@@ -287,6 +287,7 @@
     <string name="performance_hud_description">Show or hide the in-game overlay.</string>
     <string name="performance_hud_fps_limiter">FPS limiter</string>
     <string name="performance_hud_fps_limiter_description">Caps the in-game frame rate. Max: %1$d Hz.</string>
+    <string name="performance_hud_fps_limiter_lsfg_override">Disabled while LSFG frame generation is active.</string>
     <string name="performance_hud_fps_limiter_target">Target FPS</string>
     <string name="performance_hud_fps_limiter_off">Unlimited</string>
     <string name="performance_hud_fps_limiter_value">%1$d FPS</string>
@@ -1453,6 +1454,7 @@
     <string name="lsfg_enable">Enable LSFG-VK frame generation</string>
     <string name="lsfg_multiplier">Frame multiplier</string>
     <string name="lsfg_flow_scale">Flow scale</string>
+    <string name="lsfg_flow_scale_desc">Lower values reduce ghosting, higher values preserve motion detail</string>
     <string name="lsfg_performance_mode">Performance mode</string>
     <string name="lsfg_not_supported">Frame generation requires a Bionic container</string>
     <string name="lsfg_install_prompt">Lossless Scaling not installed. Tap to install. Only known to work on Adreno 6xx and above.</string>

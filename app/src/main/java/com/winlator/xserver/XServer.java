@@ -45,10 +45,12 @@ public class XServer {
     private final EnumMap<Lockable, ReentrantLock> locks = new EnumMap<>(Lockable.class);
     private boolean relativeMouseMovement = false;
     private boolean simulateTouchScreen = false;
+    private boolean runningFromGlibc = false;
 
-    public XServer(ScreenInfo screenInfo) {
+    public XServer(ScreenInfo screenInfo, boolean useGlibcContainer) {
         Log.d("XServer", "Creating xServer " + screenInfo);
         this.screenInfo = screenInfo;
+        this.runningFromGlibc = useGlibcContainer;
         for (Lockable lockable : Lockable.values()) locks.put(lockable, new ReentrantLock());
 
         pixmapManager = new PixmapManager();
@@ -208,7 +210,7 @@ public class XServer {
             }
 
             XInput2Extension xi = getExtension(XInput2Extension.MAJOR_OPCODE);
-            xi.emitRawMotion(2, dx, dy);
+            if (xi != null) xi.emitRawMotion(2, dx, dy);
         }
     }
 
@@ -217,7 +219,7 @@ public class XServer {
             pointer.setButton(buttonCode, true);
 
             XInput2Extension xi = getExtension(XInput2Extension.MAJOR_OPCODE);
-            xi.emitRawButton(2, buttonCode.code(), true);
+            if (xi != null) xi.emitRawButton(2, buttonCode.code(), true);
         }
     }
 
@@ -226,7 +228,7 @@ public class XServer {
             pointer.setButton(buttonCode, false);
 
             XInput2Extension xi = getExtension(XInput2Extension.MAJOR_OPCODE);
-            xi.emitRawButton(2, buttonCode.code(), false);
+            if (xi != null) xi.emitRawButton(2, buttonCode.code(), false);
         }
     }
 
@@ -267,7 +269,9 @@ public class XServer {
         registerExtension(new DRI3Extension(),      nextEventId, nextErrorId);
         registerExtension(new PresentExtension(),   nextEventId, nextErrorId);
         registerExtension(new SyncExtension(),      nextEventId, nextErrorId);
-        registerExtension(new XInput2Extension(),   nextEventId, nextErrorId);
+        if (!runningFromGlibc) {
+            registerExtension(new XInput2Extension(),   nextEventId, nextErrorId);
+        }
     }
 
     public <T extends Extension> T getExtension(int opcode) {
