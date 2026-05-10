@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 744 143" role="img" aria-labelledby="title desc">
+  <title id="title">Fork and build yourself</title>
+  <desc id="desc">README button linking to the GameThor fork page.</desc>
+  <rect x="6" y="9" width="732" height="130" rx="30" fill="#1a2024" opacity=".45"/>
+  <rect x="1.5" y="1.5" width="716" height="132" rx="29" fill="#50ead6" stroke="#bffcf3" stroke-width="3"/>
+  <rect x="48" y="34" width="72" height="72" rx="17" fill="#061015"/>
+  <circle cx="75" cy="59" r="8" fill="#50ead6"/>
+  <circle cx="98" cy="59" r="8" fill="#50ead6"/>
+  <circle cx="87" cy="88" r="8" fill="#50ead6"/>
+  <path d="M75 67 87 80 98 67" fill="none" stroke="#50ead6" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="146" y="67" font-family="Arial, Helvetica, sans-serif" font-size="43" font-weight="900" fill="#061015">FORK / BUILD YOURSELF</text>
+  <text x="148" y="109" font-family="Arial, Helvetica, sans-serif" font-size="23" fill="#061015">Personal experiment. No APK support queue.</text>
+</svg>

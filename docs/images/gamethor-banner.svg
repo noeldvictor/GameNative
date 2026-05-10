@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 325" role="img" aria-labelledby="title desc">
+  <title id="title">GameThor for AYN Thor AI Lab</title>
+  <desc id="desc">Wide README banner for the GameThor personal AYN Thor fork.</desc>
+  <defs>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+    <linearGradient id="screen" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#163c4a"/>
+      <stop offset="1" stop-color="#071015"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1000" height="325" fill="#061015"/>
+
+  <g opacity=".62" filter="url(#soft)">
+    <rect x="58" y="-18" width="210" height="362" rx="52" fill="#111820"/>
+    <circle cx="110" cy="84" r="18" fill="#26333d"/>
+    <circle cx="154" cy="84" r="18" fill="#26333d"/>
+    <circle cx="132" cy="124" r="18" fill="#26333d"/>
+    <rect x="200" y="34" width="570" height="250" rx="28" fill="#0b1720"/>
+    <rect x="232" y="66" width="506" height="186" rx="14" fill="url(#screen)"/>
+    <path d="M248 216h190l34-58 66 82 44-48 44 24h96" fill="none" stroke="#3dd6d0" stroke-width="4" opacity=".35"/>
+    <path d="M260 88h170m34 0h240M260 122h112m34 0h292" stroke="#ffb84d" stroke-width="3" opacity=".25"/>
+    <rect x="762" y="-12" width="180" height="350" rx="48" fill="#111820"/>
+    <circle cx="842" cy="86" r="22" fill="#26333d"/>
+    <circle cx="884" cy="126" r="13" fill="#26333d"/>
+    <circle cx="908" cy="100" r="13" fill="#26333d"/>
+    <circle cx="858" cy="154" r="13" fill="#26333d"/>
+  </g>
+
+  <rect x="36" y="39" width="524" height="249" rx="18" fill="#061015" stroke="#3dd6d0" stroke-width="3"/>
+  <text x="62" y="112" font-family="Arial, Helvetica, sans-serif" font-size="47" font-weight="800" fill="#fff9e8">GameThor for AYN Thor</text>
+  <text x="62" y="173" font-family="Arial, Helvetica, sans-serif" font-size="53" font-weight="900" fill="#50ead6">AI Lab</text>
+  <text x="62" y="211" font-family="Arial, Helvetica, sans-serif" font-size="23" fill="#fff9e8">Personal GameNative Android fork. AI-assisted.</text>
+  <text x="62" y="244" font-family="Arial, Helvetica, sans-serif" font-size="23" fill="#fff9e8">No stability promise. No support queue.</text>
+  <text x="62" y="273" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#d9e9e8">Thor-first PC game containers, drivers, media, controllers.</text>
+
+  <rect x="710" y="54" width="235" height="76" rx="17" fill="#ffb84d"/>
+  <text x="828" y="106" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="900" fill="#061015">VIBE CODED</text>
+
+  <rect x="710" y="150" width="235" height="86" rx="17" fill="#50ead6"/>
+  <text x="828" y="199" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="900" fill="#061015">FORK IT</text>
+  <text x="828" y="224" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#061015">build your own APK</text>
+
+  <rect x="710" y="253" width="235" height="40" rx="9" fill="#061015" stroke="#50ead6" stroke-width="2"/>
+  <text x="828" y="280" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#fff9e8">AYN THOR / GAME LAB</text>
+</svg>

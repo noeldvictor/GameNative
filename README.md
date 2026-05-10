@@ -1,6 +1,14 @@
 # GameThor
 
-![GameNative AYN Thor AI Lab logo](docs/assets/gamenative-ayn-thor-ai-lab-logo.svg)
+<p align="center">
+  <img src="docs/images/gamethor-banner.svg" alt="GameThor for AYN Thor AI Lab">
+</p>
+
+<p align="center">
+  <a href="https://github.com/noeldvictor/GameThor/fork">
+    <img src="docs/images/fork-it-button.svg" alt="Fork and build yourself - no APK support queue" width="620">
+  </a>
+</p>
 
 Personal vibecoded Android fork of [GameNative](https://github.com/utkarshdalal/GameNative) for the AYN Thor handheld. No promises. No support. Fork it and own the result.
 
