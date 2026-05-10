@@ -1,65 +1,93 @@
-[![Star History Rank](https://api.star-history.com/badge?repo=utkarshdalal/GameNative&theme=dark)](https://www.star-history.com/utkarshdalal/gamenative)
+# GameThor
 
-# GameNative
+![GameNative AYN Thor AI Lab logo](docs/assets/gamenative-ayn-thor-ai-lab-logo.svg)
 
+Personal vibecoded Android fork of [GameNative](https://github.com/utkarshdalal/GameNative) for the AYN Thor handheld. No promises. No support. Fork it and own the result.
 
-GameNative allows you to play games you own on Steam, Epic and GOG directly on Android devices, with cloud saves.
+GameThor keeps the upstream GameNative foundation for running legally owned PC games on Android, then bends the experiment toward one handheld target: AYN Thor. This is not upstream GameNative, not an official release channel, and not a general Android compatibility project.
 
-[Playing Stray on Poco F6](https://github.com/user-attachments/assets/1870fd14-7de9-4054-ba92-d3a5c73686b5)
+> [!WARNING]
+> This fork is vibecoded with AI assistance. That is intentional and disclosed. If AI-assisted code, docs, or generated assets bother you, use upstream GameNative or another fork.
 
-## How to Use
+> [!CAUTION]
+> Personal-use experiment. No guarantee of stability, compatibility, correctness, performance, support, or future updates. No games, keys, DRM material, store credentials, BIOS, firmware, or commercial game files are included.
 
-(Note that GameNative is still in its early stages, and all games may not work, or may require tweaking to get working well)
-1. Download the latest release [here](https://downloads.gamenative.app/releases/0.9.1/gamenative-v0.9.1.apk)
-2. Install the APK on your Android device
-3. Login to your Steam account
-4. Install your game
-5. Hit play and enjoy!
+## What This Is
 
-## Support
-To report issues or receive support, join the [Discord server](https://discord.gg/2hKv4VfZfE)
+- Android-focused GameNative fork for AYN Thor testing.
+- Branded as `GameNative AYN Thor AI Lab` in the app.
+- Built around Thor-first compatibility experiments instead of broad device support.
+- Tuned for legally owned PC games launched through GameNative-style containers.
+- A place to collect Thor presets, controller bridge fixes, runtime patches, and proof logs.
 
-Do not create issues on GitHub as they will be automatically closed!
+## Target Hardware
 
-You can support GameNative on Ko-fi at https://ko-fi.com/gamenative
+Optimization work assumes the AYN Thor handheld family. Defaults and presets should be driven by real Thor testing, not random Android phones, tablets, emulators, or desktop assumptions.
 
-## Building
-### IF YOU JUST WANT TO USE THE APP, PLEASE SEE THE HOW TO USE SECTION ABOVE. THIS IS ONLY NEEDED IF YOU WANT TO CONTRIBUTE FOR DEVELOPMENT.
-1. I use a normal build in Android studio. Hit me up if you can't figure out how to build.
-2. **SteamGridDB API Key (Optional):** To enable automatic fetching of game images for Custom Games, add your SteamGridDB API key to `local.properties`:
-   ```
-   STEAMGRIDDB_API_KEY=your_api_key_here
-   ```
-   Get your API key from: https://www.steamgriddb.com/profile/preferences
-   If the API key is not configured, the app will log a message but continue to work normally without fetching images.
+If a change is only proven on one Thor unit, say that. If a setting is speculative, keep it behind a preset, build flag, runtime check, or clearly named experimental path.
 
-## Community
+## What This Is Not
 
-Join our [Discord server](https://discord.gg/2hKv4VfZfE) for support and updates.
+- Not upstream GameNative.
+- Not an official GameNative release.
+- Not a supported Android PC gaming distribution.
+- Not a compatibility reporting project for every device.
+- Not a place to request games, cracks, bypasses, keys, accounts, or commercial files.
+- Not an online-cheat, anti-cheat-bypass, multiplayer-cheat, or DRM-bypass project.
 
-## License
-[GPL 3.0](https://github.com/utkarshdalal/GameNative/blob/master/LICENSE)
+## Support And Issues
 
-See [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES) for attributions, copyleft source offers, and notices about third-party and proprietary components bundled with the application.
+Do not open issues expecting support for this experiment. Fork it, patch it, and own it.
 
-## Analytics & Privacy
+Do not send GameThor-specific breakage to upstream GameNative. Upstream GameNative has its own goals, maintainers, rules, and support expectations.
 
-GameNative uses [PostHog](https://posthog.com) for anonymous analytics. No personal information is ever collected — no names, emails, IPs, or device identifiers.
+## Where This Fork Diverges
 
-**Always collected** (to improve game compatibility):
-- Game launch, close, and exit events (game name, store, session length, average FPS, container config)
-- Game install, cancel, and uninstall events
+GameThor has moved away from stock GameNative in visible and practical ways:
 
-This data helps us understand which games work, how well they perform, and automatically apply known-good configurations for future users. It cannot identify you.
+- App-facing branding identifies the lab build as `GameNative AYN Thor AI Lab`.
+- The writable fork remote is `git@github.com:noeldvictor/GameThor.git`; pushes should use SSH.
+- HGO lab presets collect tested Wine, DXVK, graphics, controller, and env recipes.
+- Launch presets can be supplied through JSON or Android intent extras such as `hgoLabPreset` / `hgo_lab_preset`.
+- Thor controller work includes raw input passthrough, private EVSHIM shared-memory paths, and Android-to-Wine bridge debugging.
+- Helper overlays are expected to work by controller, show clear toggle state, and stay scoped to legally owned offline single-player use.
+- Runtime experiments include optional imagefs patches for GStreamer and HGO MediaCodec paths.
+- The HGO MediaCodec H.264 path is used to test hardware video decode on Thor.
+- DXVK canaries track Thor-specific Vulkan, DRI3, wrapper, and presentation behavior.
+- The fork favors log-backed proof over guessing: exact env vars, loaded plugins, screenshots, and `logcat` evidence matter.
 
-**Optional** (can be disabled in Settings > Info > Usage Analytics):
-- Feature usage (on-screen keyboard, controller, HUD, control editor)
-- Login success/failure events
-- Recommendation interactions
-- App lifecycle events (foreground/background)
-- Cloud sync events
+For the working notes behind these differences, see [agent.md](agent.md) and [AGENTS.md](AGENTS.md).
 
-See our full [Privacy Policy](PrivacyPolicy/README.md) for more details.
+## Build Locally
 
-**Disclaimer: This software is intended for playing games that you legally own. Do not use this software for piracy or any other illegal purposes. The maintainer of this fork assumes no
-responsibility for misuse.**
+This is an Android project. Configure Android Studio or create a repo-local `local.properties` with your Android SDK and NDK paths, then build with Gradle:
+
+```powershell
+.\gradlew.bat :app:assembleDebug
+```
+
+For local command-line Java builds on the maintainer workstation, the agent notes document the expected JDK/SDK paths and compile check.
+
+Generated APKs, Gradle caches, runtime imagefs archives, extracted runtimes, Android SDKs, and game files should not be committed.
+
+## Runtime Experiments
+
+GameThor experiments may involve optional runtime archives such as GStreamer or HGO MediaCodec patches. These are treated as local build/test artifacts unless deliberately added through normal source paths.
+
+Do not assume an env var enabled a runtime feature. Prove the plugin exists in the imagefs, prove it loaded, and prove the game path used it.
+
+## Legal Scope
+
+Use this only with games you legally own. This repository does not include commercial game data and should not be used to redistribute modified commercial game files.
+
+Offline helper and cheat-overlay work is limited to personal, legally owned, offline single-player use. Do not use this project for online cheating, multiplayer cheating, anti-cheat bypasses, DRM bypasses, account abuse, or piracy.
+
+## Analytics And Privacy
+
+This fork inherits GameNative behavior unless changed in source. Review the in-app settings and [Privacy Policy](PrivacyPolicy/README.md) before sharing builds.
+
+## Upstream Credit
+
+GameThor exists because [GameNative](https://github.com/utkarshdalal/GameNative), Winlator, Wine, Box64, FEX, DXVK, VKD3D, Mesa, GStreamer, Android, and many other open-source projects did the foundational work.
+
+This repository remains under the upstream license terms. See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES).

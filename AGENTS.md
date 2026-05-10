@@ -1,13 +1,14 @@
-# GameNative Agent Notes
+# GameThor Agent Notes
 
-These notes are for work in this GameNative fork. Keep changes practical, testable, and aimed at making legally owned offline PC games better on handheld Android devices such as AYN Thor.
+These notes are for work in GameThor, a vibecoded GameNative fork customized for AYN Thor. Keep changes practical, testable, and aimed at making legally owned offline PC games better on handheld Android devices such as AYN Thor.
 
 ## Source Control
 
-- Writable remote is the user's fork: `origin = git@github.com:noeldvictor/GameNative.git`.
+- Writable remote is the user's fork: `origin = git@github.com:noeldvictor/GameThor.git`.
 - Original project is comparison/pull-only: `upstream = https://github.com/utkarshdalal/GameNative.git`.
+- Always use SSH for pushes; do not switch `origin` to HTTPS.
 - Do not push to upstream. This checkout should have upstream push disabled.
-- Commit GameNative source changes in this repo, not in the tools repo.
+- Commit GameThor source changes in this repo, not in the tools repo.
 - Do not commit APK builds, runtime imagefs archives, extracted runtimes, Gradle caches, Android SDKs, or game files.
 
 ## Safety Scope
